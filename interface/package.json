@@ -1,0 +1,17 @@
+{
+  "name": "synth-interface",
+  "version": "1.0.0",
+  "description": "Interface for the synthetiser",
+  "main": "dist/main.js",
+  "scripts": {
+    "build": "tsc",
+    "start": "npm run build && electron ./dist/main.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "electron": "^34.0.2",
+    "typescript": "^5.7.3"
+  }
+}
