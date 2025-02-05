@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta http-equiv="Content-Security-Policy" content="script-src 'self'" />
+	<link rel="stylesheet" href="style.css">
+	<script src="../../dist/renderer/script.js"></script>
+</head>
+
+<body>
+	<h1>Hello world!</h1>
+	<button id="action-button">Click to send something to the main process</button>
+	<div>
+		<p>
+			The value returned from the main process will display below:
+		</p>
+		<span id="value-from-main"></span>
+		<span id="counter">0</span>
+	</div>
+</body>
+
+</html>
