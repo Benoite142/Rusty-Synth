@@ -1,0 +1,8 @@
+#ifndef CONSTANTS_H
+#define CONSTANTS_H
+
+#define SAMPLE_RATE 44'100
+#define BUFFER_SIZE (SAMPLE_RATE * 100 / 1000)
+#define PI 3.141592643589793238
+
+#endif
