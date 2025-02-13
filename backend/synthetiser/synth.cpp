@@ -1,5 +1,5 @@
 #include "constants.h"
-#include "oscillator.hpp"
+#include "oscillator/oscillator.hpp"
 #include <X11/X.h>
 #include <X11/XKBlib.h>
 #include <X11/Xlib.h>
@@ -43,11 +43,11 @@ int8_t floatTo8bits(float fFloat) {
   return static_cast<int8_t>(dDouble);
 }
 
-void writeDataToBuffer(std::vector<short> *buffer, Oscillator osc,
+void writeDataToBuffer(std::vector<short> *buffer, Oscillator *osc,
                        int nombreTick) {
   buffer->clear();
   for (int i = 0; i < nombreTick; ++i) {
-    buffer->push_back(floatTo16bits(osc.advance()));
+    buffer->push_back(floatTo16bits(osc->advance()));
   }
 }
 
@@ -72,7 +72,7 @@ int main() {
   snd_pcm_t *handle;
   snd_pcm_hw_params_t *params;
   int dir;
-  Oscillator osc{0.5f, 440.0f};
+  SineOscillator sineOsc{0.5f, 440.0f};
 
   // In case of errors when getting audio device
   error = snd_pcm_open(&handle, "default", SND_PCM_STREAM_PLAYBACK, 0);
@@ -105,10 +105,9 @@ int main() {
 
   while (true) {
 
-    writeDataToBuffer(buffer, osc, sampleRate * 2);
+    writeDataToBuffer(buffer, &sineOsc, SAMPLE_RATE * 2);
     semaphoreMainToAudio.release();
     semaphoreAudioToMain.acquire();
-
     sleep(1);
   }
 

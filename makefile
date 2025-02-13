@@ -1,9 +1,10 @@
 CPPFLAGS = -std=c++20
 LIBFLAGS = -lX11 -lasound
+synthObjects = ./backend/synthetiser/*.cpp ./backend/synthetiser/oscillator/*.cpp 
 
 synth:
 	mkdir -p ./build
-	g++ $(CPPFLAGS) -o ./build/standalone_synth ./synthetiser/synth.cpp $(LIBFLAGS)
+	g++ $(CPPFLAGS) -o ./build/standalone_synth $(synthObjects) $(LIBFLAGS)
 
 run_synth:
 	./build/standalone_synth
