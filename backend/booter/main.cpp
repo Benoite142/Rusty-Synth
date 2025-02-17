@@ -1,10 +1,11 @@
 #include "../keyboard_sniffer/sniffer.hpp"
+#include "../sound_player/sound_player.hpp"
+#include "../synthetiser/synth.hpp"
+#include "../utils/key_map.hpp"
 #include <iostream>
-#include <map>
 #include <mutex>
+#include <semaphore>
 #include <thread>
-
-void wake_up() { std::cout << "woke up!\n"; }
 
 int main() {
   KeyboardSniffer sniffer;
@@ -16,15 +17,38 @@ int main() {
     return -1;
   }
 
-  // to see if we could simply have hardcoded array to have better performances
-  // e.g. hardcoding for keys 'a' to 'l'
-  std::map<char, bool> key_map{};
+  KeyMap key_map = makeEmptyKeyMap();
   std::mutex key_map_mutex;
 
+  std::binary_semaphore bufferInput{1}, bufferOutput{0};
+
+  SineOscillator sineOsc{0.5f, 440.0f};
+
+  Synth synth{&sineOsc};
+
   std::thread sniffer_thread =
-      std::thread([&key_map, &sniffer, &key_map_mutex]() {
-        sniffer.sniff(&key_map, &key_map_mutex, wake_up);
+      std::thread([&key_map, &sniffer, &key_map_mutex, &synth]() {
+        sniffer.sniff(&key_map, &key_map_mutex);
+      });
+
+  std::vector<short> buffer[BUFFER_SIZE];
+
+  std::thread synth_thread = std::thread([&synth, &bufferInput, &bufferOutput,
+                                          &buffer, &key_map, &key_map_mutex]() {
+    synth.start(&bufferInput, &bufferOutput, std::ref(buffer), &key_map,
+                &key_map_mutex);
+  });
+
+  SoundPlayer sound_player{};
+
+  std::thread sound_thread =
+      std::thread([&sound_player, &buffer, &bufferInput, &bufferOutput]() {
+        sound_player.playSound(std::ref(buffer), &bufferInput, &bufferOutput);
       });
 
   sniffer_thread.join();
+  synth_thread.join();
+  sound_thread.join();
+
+  freeKeyMap(&key_map);
 }
