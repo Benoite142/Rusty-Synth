@@ -6,7 +6,6 @@ void writeDataToBuffer(std::vector<short> *buffer, Oscillator *osc,
 
   buffer->clear();
   for (int i = 0; i < nombreTick; ++i) {
-    osc->advance();
     buffer->push_back(floatTo16bits(osc->advance()));
   }
 }
