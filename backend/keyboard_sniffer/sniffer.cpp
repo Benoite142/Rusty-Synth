@@ -1,5 +1,5 @@
 #include "sniffer.hpp"
-#include "../utils/x_utils.h"
+#include "../utils/x_utils.hpp"
 #include <iostream>
 
 KeyboardSniffer::KeyboardSniffer() {
@@ -9,9 +9,7 @@ KeyboardSniffer::KeyboardSniffer() {
   }
 }
 
-void KeyboardSniffer::sniff(std::map<char, bool> *key_map,
-                            std::mutex *key_map_lock,
-                            void (*wake_up_fn)(void)) {
+void KeyboardSniffer::sniff(KeyMap *key_map, std::mutex *key_map_lock) {
   // find the correct window here
   Window root = DefaultRootWindow(display);
 
@@ -41,10 +39,9 @@ void KeyboardSniffer::sniff(std::map<char, bool> *key_map,
       key_map_lock->lock();
       // key press triggers multiple times
       // bypassing repeats by checking if it not currently active
-      if (key_map->find(*mapKeyCodeToString(event.xkey)) == key_map->end() ||
-          !key_map->find(*mapKeyCodeToString(event.xkey))->second) {
-        key_map->insert_or_assign(*mapKeyCodeToString(event.xkey), true);
-        wake_up_fn();
+      if (*key_map->keys == '0') {
+        *key_map->keys = *mapKeyCodeToString(event.xkey);
+        *key_map->has_updated_value = true;
       }
       key_map_lock->unlock();
     }
@@ -52,8 +49,8 @@ void KeyboardSniffer::sniff(std::map<char, bool> *key_map,
     if (event.type == KeyRelease) {
       // only catching releases once, so no need to double check in the map
       key_map_lock->lock();
-      key_map->insert_or_assign(*mapKeyCodeToString(event.xkey), false);
-      wake_up_fn();
+      *key_map->keys = '0';
+      *key_map->has_updated_value = true;
       key_map_lock->unlock();
     }
   }

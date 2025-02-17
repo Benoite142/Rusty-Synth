@@ -1,4 +1,4 @@
-#include "x_utils.h"
+#include "x_utils.hpp"
 #include <X11/XKBlib.h>
 
 char *mapKeyCodeToString(XKeyEvent event) {
