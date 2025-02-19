@@ -1,5 +1,6 @@
 #include "synth.hpp"
 #include "../utils/key_map.hpp"
+#include "../utils/sound_conversions.hpp"
 #include "../utils/synth_utils.hpp"
 #include "constants.h"
 #include "oscillator/oscillator.hpp"
@@ -18,9 +19,10 @@ void Synth::start(std::binary_semaphore *bufferInputSemaphore,
   while (true) {
     map_mutex->lock();
     if (*km->has_updated_value) {
-      // this should update the frequencies when supported
-      if (*km->keys != '0') {
+      // this should update the frequencies
+      if (*km->keys != '/') {
         should_play = true;
+        osc->setFrequency(calculate_frequency(FindKeyIndex(*km->keys)));
 
       } else {
         should_play = false;

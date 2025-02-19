@@ -7,4 +7,8 @@ int16_t floatTo16bits(float fFloat);
 
 int8_t floatTo8bits(float fFloat);
 
+double calculate_frequency(int midi_input_note);
+
+int FindKeyIndex(char keyPressed);
+
 #endif

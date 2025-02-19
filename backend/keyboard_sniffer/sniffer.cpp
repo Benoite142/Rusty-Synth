@@ -32,14 +32,14 @@ void KeyboardSniffer::sniff(KeyMap *key_map, std::mutex *key_map_lock) {
     XNextEvent(display, &event);
 
     if (event.type == KeyPress) {
-      if (*mapKeyCodeToString(event.xkey) == 'q') {
+      if (*mapKeyCodeToString(event.xkey) == 'E') {
         return;
       }
 
       key_map_lock->lock();
       // key press triggers multiple times
       // bypassing repeats by checking if it not currently active
-      if (*key_map->keys == '0') {
+      if (*key_map->keys == '/') {
         *key_map->keys = *mapKeyCodeToString(event.xkey);
         *key_map->has_updated_value = true;
       }
@@ -49,7 +49,7 @@ void KeyboardSniffer::sniff(KeyMap *key_map, std::mutex *key_map_lock) {
     if (event.type == KeyRelease) {
       // only catching releases once, so no need to double check in the map
       key_map_lock->lock();
-      *key_map->keys = '0';
+      *key_map->keys = '/';
       *key_map->has_updated_value = true;
       key_map_lock->unlock();
     }
