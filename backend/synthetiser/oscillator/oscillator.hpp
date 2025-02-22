@@ -15,28 +15,34 @@ public:
   virtual float advance() = 0;
 };
 
-class SineOscillator : public Oscillator{
-  public:
-    SineOscillator(float amplitude, float freq);
-    float advance() override;
+class SineOscillator : public Oscillator {
+public:
+  SineOscillator(float amplitude, float freq);
+  float advance() override;
 };
 
-class SquareOscillator : public Oscillator{
-  public:
-    SquareOscillator(float amplitude, float freq);
-    float advance() override;
+class SquareOscillator : public Oscillator {
+public:
+  SquareOscillator(float amplitude, float freq);
+  float advance() override;
 };
 
-class TriangleOscillator : public Oscillator{
-  public:
-    TriangleOscillator(float amplitude, float freq);
-    float advance() override;
+class TriangleOscillator : public Oscillator {
+public:
+  TriangleOscillator(float amplitude, float freq);
+  float advance() override;
 };
 
-class SawOscillator : public Oscillator{
-  public:
-    SawOscillator(float amplitude, float freq);
-    float advance() override;
+class SawOscillator : public Oscillator {
+public:
+  SawOscillator(float amplitude, float freq);
+  float advance() override;
+};
+
+class NoiseOscillator : public Oscillator {
+public:
+  NoiseOscillator(float amplitude, float freq);
+  float advance() override;
 };
 
 #endif
