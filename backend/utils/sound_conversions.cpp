@@ -1,7 +1,6 @@
 #include "sound_conversions.hpp"
 #include "../synthetiser/constants.h"
 #include <cmath>
-#include <iostream>
 
 int16_t floatTo16bits(float fFloat) {
   double dDouble = (double)fFloat;
