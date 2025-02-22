@@ -17,6 +17,7 @@ public:
   void start(std::binary_semaphore *bufferInputSemaphore,
              std::binary_semaphore *bufferOutputSemaphore,
              std::vector<short> *buffer, KeyMap *km, std::mutex *map_mutex);
+  bool midi_input(snd_seq_t *seq_handle, bool should_play);
 };
 
 #endif

@@ -18,3 +18,5 @@ MidiSetup::MidiSetup() {
   }
   std::cout << "MIDI input setup completed. \n";
 }
+
+snd_seq_t *MidiSetup::get_seq_handle() { return seq_handle; }
