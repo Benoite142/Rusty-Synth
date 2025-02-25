@@ -1,14 +1,16 @@
 #include "midi_setup.hpp"
 #include <iostream>
 
-MidiSetup::MidiSetup() {
+MidiSetup::MidiSetup() {}
+
+snd_seq_t *MidiSetup::midiSetup() {
   int port;
 
   if (snd_seq_open(&seq_handle, "default", SND_SEQ_OPEN_DUPLEX, 0) < 0) {
     std::cerr << "Error opening the ALSA sequencer. \n";
   }
 
-  snd_seq_set_client_name(seq_handle, "Synthesiser-Duo Application");
+  snd_seq_set_client_name(seq_handle, "Synthesiser-Duo_Application");
 
   if (snd_seq_create_simple_port(seq_handle, "Input",
                                  SND_SEQ_PORT_CAP_WRITE |
@@ -17,6 +19,6 @@ MidiSetup::MidiSetup() {
     std::cerr << "Error creating a MIDI input port for the application. \n";
   }
   std::cout << "MIDI input setup completed. \n";
-}
 
-snd_seq_t *MidiSetup::get_seq_handle() { return seq_handle; }
+  return seq_handle;
+}

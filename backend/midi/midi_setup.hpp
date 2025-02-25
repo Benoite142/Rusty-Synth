@@ -9,6 +9,6 @@ private:
 
 public:
   MidiSetup();
-  snd_seq_t *get_seq_handle();
+  snd_seq_t *midiSetup();
 };
 #endif

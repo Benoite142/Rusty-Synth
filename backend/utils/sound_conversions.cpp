@@ -36,7 +36,7 @@ double calculate_frequency(int midi_input_note) {
 }
 
 // Finds the key index associated with the MIDI keyboard
-int FindKeyIndex(char keyPressed) {
+int findKeyIndex(char keyPressed) {
   int length = sizeof(CLAVIER_INPUT) / sizeof(MIDI_NOTES[0]);
   for (int i = 0; i < sizeof(CLAVIER_INPUT); ++i) {
     if (CLAVIER_INPUT[i] == keyPressed) {
