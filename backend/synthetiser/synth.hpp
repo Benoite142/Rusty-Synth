@@ -14,9 +14,14 @@ private:
 
 public:
   Synth(Oscillator *osc);
-  void start(std::binary_semaphore *bufferInputSemaphore,
-             std::binary_semaphore *bufferOutputSemaphore,
-             std::vector<short> *buffer, KeyMap *km, std::mutex *map_mutex);
+  void start_keyboard(std::binary_semaphore *bufferInputSemaphore,
+                      std::binary_semaphore *bufferOutputSemaphore,
+                      std::vector<short> *buffer, KeyMap *km,
+                      std::mutex *map_mutex);
+  void start_midi(std::binary_semaphore *bufferInputSemaphore,
+                  std::binary_semaphore *bufferOutputSemaphore,
+                  std::vector<short> *buffer);
+
   bool midi_input(snd_seq_t *seq_handle, bool should_play);
 };
 

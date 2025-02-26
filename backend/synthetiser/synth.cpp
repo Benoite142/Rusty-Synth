@@ -10,14 +10,12 @@
 
 Synth::Synth(Oscillator *osc) { this->osc = osc; }
 
-void Synth::start(std::binary_semaphore *bufferInputSemaphore,
-                  std::binary_semaphore *bufferOutputSemaphore,
-                  std::vector<short> *buffer, KeyMap *km,
-                  std::mutex *map_mutex) {
+void Synth::start_keyboard(std::binary_semaphore *bufferInputSemaphore,
+                           std::binary_semaphore *bufferOutputSemaphore,
+                           std::vector<short> *buffer, KeyMap *km,
+                           std::mutex *map_mutex) {
 
   bool should_play = false;
-  MidiSetup midiSetup{};
-  snd_seq_t *seq_handle = midiSetup.get_seq_handle();
 
   while (true) {
     map_mutex->lock();
@@ -25,7 +23,7 @@ void Synth::start(std::binary_semaphore *bufferInputSemaphore,
       // this should update the frequencies
       if (*km->keys != '/') {
         should_play = true;
-        osc->setFrequency(calculate_frequency(FindKeyIndex(*km->keys)));
+        osc->setFrequency(calculate_frequency(findKeyIndex(*km->keys)));
 
       } else {
         should_play = false;
@@ -34,8 +32,6 @@ void Synth::start(std::binary_semaphore *bufferInputSemaphore,
     }
     map_mutex->unlock();
 
-    should_play = midi_input(seq_handle, should_play);
-
     if (should_play) {
       writeDataToBuffer(buffer, osc, SAMPLE_RATE / 10);
       bufferInputSemaphore->release();
@@ -43,6 +39,24 @@ void Synth::start(std::binary_semaphore *bufferInputSemaphore,
     }
 
     std::this_thread::sleep_for(std::chrono::milliseconds(100));
+  }
+}
+
+void Synth::start_midi(std::binary_semaphore *bufferInputSemaphore,
+                       std::binary_semaphore *bufferOutputSemaphore,
+                       std::vector<short> *buffer) {
+  MidiSetup midi;
+  snd_seq_t *seq_handle = midi.midiSetup();
+  bool should_play = false;
+
+  while (true) {
+    should_play = midi_input(seq_handle, should_play);
+
+    if (should_play) {
+      writeDataToBuffer(buffer, osc, SAMPLE_RATE / 10);
+      bufferInputSemaphore->release();
+      bufferOutputSemaphore->acquire();
+    }
   }
 }
 

@@ -35,9 +35,13 @@ int main() {
 
   std::thread synth_thread = std::thread([&synth, &bufferInput, &bufferOutput,
                                           &buffer, &key_map, &key_map_mutex]() {
-    synth.start(&bufferInput, &bufferOutput, std::ref(buffer), &key_map,
-                &key_map_mutex);
+    synth.start_keyboard(&bufferInput, &bufferOutput, std::ref(buffer),
+                         &key_map, &key_map_mutex);
   });
+  std::thread midi_thread =
+      std::thread([&synth, &bufferInput, &bufferOutput, &buffer]() {
+        synth.start_midi(&bufferInput, &bufferOutput, std::ref(buffer));
+      });
 
   SoundPlayer sound_player{};
 
@@ -48,6 +52,7 @@ int main() {
 
   sniffer_thread.join();
   synth_thread.join();
+  midi_thread.join();
   sound_thread.join();
 
   freeKeyMap(&key_map);
