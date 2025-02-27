@@ -4,7 +4,6 @@
 MidiSetup::MidiSetup() {}
 
 snd_seq_t *MidiSetup::midiSetup() {
-  int port;
 
   if (snd_seq_open(&seq_handle, "default", SND_SEQ_OPEN_DUPLEX, 0) < 0) {
     std::cerr << "Error opening the ALSA sequencer. \n";
