@@ -44,4 +44,10 @@ public:
   void setFrequency(float freq) override;
 };
 
+class NoiseOscillator : public Oscillator {
+public:
+  NoiseOscillator(float amplitude, float freq);
+  float advance() override;
+};
+
 #endif
