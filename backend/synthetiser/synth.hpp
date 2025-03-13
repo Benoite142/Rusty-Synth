@@ -4,9 +4,8 @@
 #include "../utils/key_map.hpp"
 #include "oscillator/oscillator.hpp"
 #include <alsa/asoundlib.h>
+#include <condition_variable>
 #include <mutex>
-#include <semaphore>
-#include <vector>
 
 class Synth {
 private:
@@ -14,13 +13,8 @@ private:
 
 public:
   Synth(Oscillator *osc);
-  void start_keyboard(std::binary_semaphore *bufferInputSemaphore,
-                      std::binary_semaphore *bufferOutputSemaphore,
-                      std::vector<short> *buffer, KeyMap *km,
-                      std::mutex *map_mutex);
-  void start_midi(std::binary_semaphore *bufferInputSemaphore,
-                  std::binary_semaphore *bufferOutputSemaphore,
-                  std::vector<short> *buffer);
+  void start_keyboard(KeyMap *km, std::mutex *map_mutex);
+  void start_midi(KeyMap *km, std::mutex *map_mutex);
 
   bool midi_input(snd_seq_t *seq_handle, bool should_play);
 };

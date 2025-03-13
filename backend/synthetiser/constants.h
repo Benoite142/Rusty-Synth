@@ -2,7 +2,12 @@
 #define CONSTANTS_H
 
 #define SAMPLE_RATE 44'100
-#define BUFFER_SIZE (SAMPLE_RATE * 100 / 1000)
+/*
+ * adjust buffer size along with device parameters (periods and period sizes)
+ * in case of problems regarding the "responsiveness" of the real time keyboard
+ * usage
+ */
+#define BUFFER_SIZE 1024
 #define PI 3.141592643589793238
 #define A4_MIDI_NOTE 69
 #define A4_FREQUENCY 440.0
