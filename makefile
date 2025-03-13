@@ -11,7 +11,7 @@ synth:
 run_synth:
 	./build/standalone_synth
 
-build:
+build: clean
 	mkdir -p ./build
 	g++ $(CPPFLAGS) -o ./build/app $(synthObjects) $(utils) ./backend/keyboard_sniffer/sniffer.cpp ./backend/booter/main.cpp $(LIBFLAGS)
 

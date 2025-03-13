@@ -1,8 +1,13 @@
 #include "sniffer.hpp"
 #include "../utils/x_utils.hpp"
+#include <X11/Xlib.h>
 #include <iostream>
+#include <mutex>
 
 KeyboardSniffer::KeyboardSniffer() {
+
+  int status = XInitThreads();
+
   display = XOpenDisplay(0);
   if (display == NULL) {
     throw "Could not open display";
@@ -10,6 +15,7 @@ KeyboardSniffer::KeyboardSniffer() {
 }
 
 void KeyboardSniffer::sniff(KeyMap *key_map, std::mutex *key_map_lock) {
+
   // find the correct window here
   Window root = DefaultRootWindow(display);
 
@@ -27,13 +33,21 @@ void KeyboardSniffer::sniff(KeyMap *key_map, std::mutex *key_map_lock) {
   }
 
   XEvent event;
+  int error;
 
   while (true) {
-    XNextEvent(display, &event);
+    XLockDisplay(display);
+
+    error = XNextEvent(display, &event);
+
+    if (error < 0) {
+      std::cout << "error reading xevent\n";
+    }
 
     if (event.type == KeyPress) {
       if (*mapKeyCodeToString(event.xkey) == 'E') {
-        return;
+        std::cout << "exiting sniffer\n";
+        break;
       }
 
       key_map_lock->lock();
@@ -43,6 +57,7 @@ void KeyboardSniffer::sniff(KeyMap *key_map, std::mutex *key_map_lock) {
         *key_map->keys = *mapKeyCodeToString(event.xkey);
         *key_map->has_updated_value = true;
       }
+
       key_map_lock->unlock();
     }
 
@@ -53,6 +68,8 @@ void KeyboardSniffer::sniff(KeyMap *key_map, std::mutex *key_map_lock) {
       *key_map->has_updated_value = true;
       key_map_lock->unlock();
     }
+
+    XUnlockDisplay(display);
   }
 
   XUngrabKey(display, AnyKey, AnyModifier, root);

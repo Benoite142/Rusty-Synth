@@ -5,7 +5,7 @@ KeyMap makeEmptyKeyMap() {
   bool *b = static_cast<bool *>(std::malloc(sizeof(bool)));
   char *c = static_cast<char *>(std::malloc(sizeof(char)));
   *b = false;
-  *c = '0';
+  *c = '/';
   return KeyMap{.has_updated_value = b, .keys = c};
 }
 

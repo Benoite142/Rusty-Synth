@@ -1,62 +1,44 @@
 #include "synth.hpp"
 #include "../midi/midi_setup.hpp"
+#include "../sound_player/sound_player.hpp"
 #include "../utils/key_map.hpp"
 #include "../utils/sound_conversions.hpp"
-#include "../utils/synth_utils.hpp"
 #include "constants.h"
 #include "oscillator/oscillator.hpp"
-#include <chrono>
-#include <thread>
+#include <iostream>
 
 Synth::Synth(Oscillator *osc) { this->osc = osc; }
 
-void Synth::start_keyboard(std::binary_semaphore *bufferInputSemaphore,
-                           std::binary_semaphore *bufferOutputSemaphore,
-                           std::vector<short> *buffer, KeyMap *km,
-                           std::mutex *map_mutex) {
+void Synth::start_keyboard(KeyMap *km, std::mutex *map_mutex) {
 
-  bool should_play = false;
+  SoundPlayer async_player{};
 
-  while (true) {
-    map_mutex->lock();
-    if (*km->has_updated_value) {
-      // this should update the frequencies
-      if (*km->keys != '/') {
-        should_play = true;
-        osc->setFrequency(calculate_frequency(findKeyIndex(*km->keys)));
+  float buffer[BUFFER_SIZE];
 
-      } else {
-        should_play = false;
-      }
-      *km->has_updated_value = false;
-    }
-    map_mutex->unlock();
+  // playing in async mode still uses up a thread
+  async_player.playAsync(buffer, this->osc, km, map_mutex);
 
-    if (should_play) {
-      writeDataToBuffer(buffer, osc, SAMPLE_RATE / 10);
-      bufferInputSemaphore->release();
-      bufferOutputSemaphore->acquire();
-    }
-
-    std::this_thread::sleep_for(std::chrono::milliseconds(100));
-  }
+  // for now asserting here since we should never reach
+  assert(false);
 }
 
-void Synth::start_midi(std::binary_semaphore *bufferInputSemaphore,
-                       std::binary_semaphore *bufferOutputSemaphore,
-                       std::vector<short> *buffer) {
+void Synth::start_midi(KeyMap *km, std::mutex *map_mutex) {
   MidiSetup midi;
   snd_seq_t *seq_handle = midi.midiSetup();
   bool should_play = false;
 
+  std::cout << "MIDI input is currently not available\n";
+
   while (true) {
     should_play = midi_input(seq_handle, should_play);
 
+    /*
     if (should_play) {
       writeDataToBuffer(buffer, osc, SAMPLE_RATE / 10);
       bufferInputSemaphore->release();
       bufferOutputSemaphore->acquire();
     }
+    */
   }
 }
 

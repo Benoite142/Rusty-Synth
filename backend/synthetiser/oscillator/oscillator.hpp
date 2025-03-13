@@ -1,6 +1,7 @@
 #ifndef OSCILLATOR_HPP
 #define OSCILLATOR_HPP
 
+// not used here but used in all oscillator types
 #include "../constants.h"
 
 class Oscillator {
