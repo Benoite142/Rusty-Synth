@@ -20,17 +20,15 @@ void async_player_callback(snd_async_handler_t *ahandler) {
   float *buffer = data->buffer;
   snd_pcm_sframes_t avail;
   int error = 0;
-
   avail = snd_pcm_avail_update(handle);
 
   while (avail >= BUFFER_SIZE) {
     data->map_mutex->lock();
-    if (data->key_map->has_updated_value) {
-      *data->key_map->has_updated_value = false;
+    if (data->note_map->has_updated_value) {
+      *data->note_map->has_updated_value = false;
       // now update the frequencies
-      if (*data->key_map->keys != '/') {
-        data->osc->setFrequency(
-            calculate_frequency(findKeyIndex(*data->key_map->keys)));
+      if (*data->note_map->notes != -1) {
+        data->osc->setFrequency(calculate_frequency(*data->note_map->notes));
       } else {
         data->osc->setFrequency(0);
       }

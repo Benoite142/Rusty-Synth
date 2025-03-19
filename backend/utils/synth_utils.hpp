@@ -2,9 +2,10 @@
 #define SYNTH_UTILS
 
 #include "../synthetiser/oscillator/oscillator.hpp"
-#include "key_map.hpp"
+#include "note_map.hpp"
 #include <alsa/asoundlib.h>
 #include <mutex>
+#include <string>
 #include <vector>
 
 void writeDataToBuffer(std::vector<short> *buffer, Oscillator *osc,
@@ -13,7 +14,7 @@ void writeDataToBuffer(std::vector<short> *buffer, Oscillator *osc,
 struct private_data {
   float *buffer;
   Oscillator *osc;
-  KeyMap *key_map;
+  NoteMap *note_map;
   std::mutex *map_mutex;
 };
 

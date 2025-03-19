@@ -2,9 +2,10 @@
 #define SOUND_PLAYER
 
 #include "../synthetiser/oscillator/oscillator.hpp"
-#include "../utils/key_map.hpp"
+#include "../utils/note_map.hpp"
 #include <alsa/asoundlib.h>
 #include <mutex>
+#include <string>
 
 class SoundPlayer {
 private:
@@ -17,7 +18,7 @@ private:
 
 public:
   SoundPlayer();
-  void playAsync(float *buffer, Oscillator *osc, KeyMap *key_map,
+  void playAsync(float *buffer, Oscillator *osc, NoteMap *note_map,
                  std::mutex *map_mutex);
 
 private:

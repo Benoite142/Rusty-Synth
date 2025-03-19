@@ -198,15 +198,14 @@ void SoundPlayer::setup_pipe() {
   }
 }
 
-void SoundPlayer::playAsync(float *buffer, Oscillator *osc, KeyMap *key_map,
+void SoundPlayer::playAsync(float *buffer, Oscillator *osc, NoteMap *note_map,
                             std::mutex *map_mutex) {
   int error = 0;
   setup_pipe();
-
   private_data data{
       .buffer = buffer,
       .osc = osc,
-      .key_map = key_map,
+      .note_map = note_map,
       .map_mutex = map_mutex,
   };
 
@@ -220,18 +219,17 @@ void SoundPlayer::playAsync(float *buffer, Oscillator *osc, KeyMap *key_map,
 
   /// initial write
   map_mutex->lock();
-  if (key_map->has_updated_value) {
+  if (note_map->has_updated_value) {
     // update frequencies if need be
-    if (*key_map->keys != '/') {
-      osc->setFrequency(calculate_frequency(findKeyIndex(*key_map->keys)));
+    if (*note_map->notes != -1) {
+      osc->setFrequency(calculate_frequency(*note_map->notes));
     } else {
       osc->setFrequency(0);
     }
 
-    *key_map->has_updated_value = false;
+    *note_map->has_updated_value = false;
   }
   map_mutex->unlock();
-
   for (int count = 0; count < 2; count++) {
     for (int i = 0; i < BUFFER_SIZE; ++i) {
       buffer[i] = osc->advance(); // floatTo16bits(osc->advance());
@@ -254,7 +252,6 @@ void SoundPlayer::playAsync(float *buffer, Oscillator *osc, KeyMap *key_map,
       std::cout << "initial write unexpected amount\n";
     }
   }
-
   // not started yet, but ring buffer populated
   if (snd_pcm_state(handle) == SND_PCM_STATE_PREPARED) {
     error = snd_pcm_start(handle);
@@ -263,7 +260,6 @@ void SoundPlayer::playAsync(float *buffer, Oscillator *osc, KeyMap *key_map,
       exit(-1);
     }
   }
-
   // we don't really expect to exit this loop for now
   // so since async callback is doing work in the background
   // this thread can simply suspend

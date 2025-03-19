@@ -1,4 +1,5 @@
 #include "sniffer.hpp"
+#include "../utils/sound_conversions.hpp"
 #include "../utils/x_utils.hpp"
 #include <X11/Xlib.h>
 #include <iostream>
@@ -7,6 +8,9 @@
 KeyboardSniffer::KeyboardSniffer() {
 
   int status = XInitThreads();
+  if (status == 0) {
+    throw "Could not open XinitThreads";
+  }
 
   display = XOpenDisplay(0);
   if (display == NULL) {
@@ -14,18 +18,16 @@ KeyboardSniffer::KeyboardSniffer() {
   }
 }
 
-void KeyboardSniffer::sniff(KeyMap *key_map, std::mutex *key_map_lock) {
+void KeyboardSniffer::sniff(NoteMap *note_map, std::mutex *note_map_lock) {
 
   // find the correct window here
   Window root = DefaultRootWindow(display);
-
   XGrabKey(display, AnyKey, AnyModifier, root, False, GrabModeAsync,
            GrabModeAsync);
 
   int supported_autorepeat_detect;
 
   XkbSetDetectableAutoRepeat(display, true, &supported_autorepeat_detect);
-
   if (supported_autorepeat_detect) {
     std::cout << "supported\n";
   } else {
@@ -49,24 +51,23 @@ void KeyboardSniffer::sniff(KeyMap *key_map, std::mutex *key_map_lock) {
         std::cout << "exiting sniffer\n";
         break;
       }
-
-      key_map_lock->lock();
+      note_map_lock->lock();
       // key press triggers multiple times
       // bypassing repeats by checking if it not currently active
-      if (*key_map->keys == '/') {
-        *key_map->keys = *mapKeyCodeToString(event.xkey);
-        *key_map->has_updated_value = true;
+      if (*note_map->notes == -1) {
+        *note_map->notes = findMidiNote(*mapKeyCodeToString(event.xkey));
+        *note_map->has_updated_value = true;
       }
 
-      key_map_lock->unlock();
+      note_map_lock->unlock();
     }
 
     if (event.type == KeyRelease) {
       // only catching releases once, so no need to double check in the map
-      key_map_lock->lock();
-      *key_map->keys = '/';
-      *key_map->has_updated_value = true;
-      key_map_lock->unlock();
+      note_map_lock->lock();
+      *note_map->notes = -1;
+      *note_map->has_updated_value = true;
+      note_map_lock->unlock();
     }
 
     XUnlockDisplay(display);

@@ -21,3 +21,35 @@ snd_seq_t *MidiSetup::midiSetup() {
 
   return seq_handle;
 }
+
+void MidiSetup::midiSniffer(NoteMap *note_map, std::mutex *note_map_lock) {
+  if (!seq_handle) {
+    std::cerr << "Error: seq_handle is NULL\n";
+    return;
+  }
+
+  while (true) {
+    if (snd_seq_event_input(seq_handle, &event) < 0) {
+      std::cout << "Error with the MIDI event stream\n";
+    } else {
+
+      if (event->type == SND_SEQ_EVENT_NOTEON) {
+        int note = event->data.note.note;
+        int velocity = event->data.note.velocity;
+
+        note_map_lock->lock();
+        *note_map->notes = velocity > 0 ? note : -1;
+        *note_map->has_updated_value = true;
+        note_map_lock->unlock();
+
+      } else if (event->type == SND_SEQ_EVENT_NOTEOFF) {
+
+        note_map_lock->lock();
+        *note_map->notes = -1;
+        *note_map->has_updated_value = true;
+        note_map_lock->unlock();
+      }
+      snd_seq_free_event(event);
+    }
+  }
+}
