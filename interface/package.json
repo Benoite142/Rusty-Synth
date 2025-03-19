@@ -5,7 +5,7 @@
   "main": "dist/main.js",
   "scripts": {
     "build": "tsc",
-    "start": "npm run build && electron ./dist/main.js"
+    "start": "npm run build && electron --no-sandbox ./dist/main.js"
   },
   "keywords": [],
   "author": "",
