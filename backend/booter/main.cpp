@@ -38,7 +38,7 @@ int main() {
   NoteMap note_map = makeEmptyNoteMap();
   std::mutex note_map_mutex;
 
-  SineOscillator sineOsc{0.5f, 440.0f};
+  SineOscillator sineOsc{440.0f};
 
   Synth synth{&sineOsc};
 

@@ -1,8 +1,8 @@
+#include "../envelope/envelope.hpp"
 #include "oscillator.hpp"
 #include <cmath>
 
-SineOscillator::SineOscillator(float amplitude, float freq)
-    : Oscillator(amplitude, freq) {
+SineOscillator::SineOscillator(float freq) : Oscillator(freq) {
   offset = 2 * PI * (freq / SAMPLE_RATE);
 }
 
@@ -17,10 +17,15 @@ float SineOscillator::advance() {
     angle += 2 * PI;
   }
 
-  return amplitude * std::sin(angle);
+  float amp = envelope.getAmplitude();
+  return amp * std::sin(angle);
 }
 
 void SineOscillator::setFrequency(float new_freq) {
   frequency = new_freq;
   offset = 2 * PI * (frequency / SAMPLE_RATE);
 }
+
+void SineOscillator::noteOn() { envelope.noteOn(); }
+
+void SineOscillator::noteOff() { envelope.noteOff(); }

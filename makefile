@@ -1,6 +1,6 @@
 CPPFLAGS = -std=c++20
 LIBFLAGS = -lX11 -lasound
-synthObjects = ./backend/synthetiser/*.cpp ./backend/synthetiser/oscillator/*.cpp ./backend/sound_player/*.cpp ./backend/midi/*.cpp
+synthObjects = ./backend/synthetiser/*.cpp ./backend/synthetiser/oscillator/*.cpp ./backend/sound_player/*.cpp ./backend/midi/*.cpp ./backend/synthetiser/envelope/*.cpp
 utils = ./backend/utils/*.cpp
 synth_main_files = ./backend/keyboard_sniffer/sniffer.cpp ./backend/booter/main.cpp
 

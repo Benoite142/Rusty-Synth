@@ -207,7 +207,6 @@ void SoundPlayer::playAsync(float *buffer, Oscillator *osc, NoteMap *note_map,
       .note_map = note_map,
       .map_mutex = map_mutex,
   };
-
   error = snd_async_add_pcm_handler(&ahandler, handle, async_player_callback,
                                     &data);
   if (error < 0) {
@@ -222,8 +221,9 @@ void SoundPlayer::playAsync(float *buffer, Oscillator *osc, NoteMap *note_map,
     // update frequencies if need be
     if (*note_map->notes != -1) {
       osc->setFrequency(calculate_frequency(*note_map->notes));
+      osc->noteOn();
     } else {
-      osc->setFrequency(0);
+      osc->noteOff();
     }
 
     *note_map->has_updated_value = false;
@@ -231,6 +231,7 @@ void SoundPlayer::playAsync(float *buffer, Oscillator *osc, NoteMap *note_map,
   map_mutex->unlock();
   for (int count = 0; count < 2; count++) {
     for (int i = 0; i < BUFFER_SIZE; ++i) {
+
       buffer[i] = osc->advance(); // floatTo16bits(osc->advance());
     }
 

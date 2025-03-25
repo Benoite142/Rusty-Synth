@@ -1,10 +1,14 @@
 #include "oscillator.hpp"
 #include <cstdlib>
 
-NoiseOscillator::NoiseOscillator(float amplitude, float freq)
-    : Oscillator(amplitude, freq) {}
+NoiseOscillator::NoiseOscillator(float freq) : Oscillator(freq) {}
 
 float NoiseOscillator::advance() {
 
-  return amplitude * ((float)rand() / (float)RAND_MAX) - 1.0f;
+  float amp = envelope.getAmplitude();
+  return amp * ((float)rand() / (float)RAND_MAX) - 1.0f;
 }
+
+void NoiseOscillator::noteOn() { envelope.noteOn(); }
+
+void NoiseOscillator::noteOff() { envelope.noteOff(); }
