@@ -2,20 +2,44 @@
 #include "../utils/sound_conversions.hpp"
 #include "../utils/x_utils.hpp"
 #include <X11/Xlib.h>
+#include <X11/Xutil.h>
+#include <chrono>
 #include <iostream>
 #include <mutex>
+#include <optional>
+#include <thread>
 
-KeyboardSniffer::KeyboardSniffer() {
-
+int KeyboardSniffer::init() {
   int status = XInitThreads();
   if (status == 0) {
-    throw "Could not open XinitThreads";
+    std::cout << "could not init x11 threads\n";
+    return -1;
   }
 
   display = XOpenDisplay(0);
   if (display == NULL) {
-    throw "Could not open display";
+    std::cout << "could not open default display\n";
+    return -1;
   }
+
+  std::optional<Window> possible_window;
+
+  size_t attempt = 0;
+  while (attempt++ < 10) {
+    possible_window = X11findWindow(display);
+
+    if (possible_window.has_value()) {
+      window = possible_window.value();
+      return 0;
+    }
+
+    // timeout 1 second to let interface boot
+    // if after 10 tries it doesnt boot we abandon
+    std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+  }
+
+  std::cout << "could not find interface\n";
+  return -1;
 }
 
 void KeyboardSniffer::sniff(NoteMap *note_map, std::mutex *note_map_lock) {

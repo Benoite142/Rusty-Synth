@@ -2,6 +2,7 @@ CPPFLAGS = -std=c++20
 LIBFLAGS = -lX11 -lasound
 synthObjects = ./backend/synthetiser/*.cpp ./backend/synthetiser/oscillator/*.cpp ./backend/sound_player/*.cpp ./backend/midi/*.cpp
 utils = ./backend/utils/*.cpp
+synth_main_files = ./backend/keyboard_sniffer/sniffer.cpp ./backend/booter/main.cpp
 
 synth:
 	mkdir -p ./build
@@ -11,7 +12,7 @@ synth:
 run_synth:
 	./build/standalone_synth
 
-build: clean
+build: clean_build
 	mkdir -p ./build
 	g++ $(CPPFLAGS) -o ./build/app $(synthObjects) $(utils) ./backend/keyboard_sniffer/sniffer.cpp ./backend/booter/main.cpp $(LIBFLAGS)
 
@@ -19,8 +20,26 @@ clang:
 	mkdir -p ./build
 	clang++ -Wall $(CPPFLAGS) $(LIBFLAGS) -o ./build/app ./backend/keyboard_sniffer/sniffer.cpp ./backend/booter/main.cpp
 
+release: clean_release
+	mkdir ./release
+
+	# front end
+	cd interface && npm run package
+	# catching the app
+	cp ./interface/release_build/*.AppImage ./release/synth-interface.AppImage
+
+	# booter
+	cp ./release_src_files/booter.sh ./release/boot
+	cp ./release_src_files/README.md ./release/
+
+	# back end
+	g++ $(CPPFLAGS) -O3 -o ./release/synth-logic $(synthObjects) $(utils) $(synth_main_files)  $(LIBFLAGS)
+
 run:
 	./build/app
 
-clean:
+clean_build:
 	rm -rf ./build
+
+clean_release:
+	rm -rf ./release

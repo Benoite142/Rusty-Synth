@@ -9,16 +9,13 @@
 #include <thread>
 
 int main() {
-  KeyboardSniffer sniffer;
+  KeyboardSniffer sniffer = KeyboardSniffer();
   MidiSetup midi_input;
 
-  try {
-    sniffer = KeyboardSniffer();
-  } catch (const char *err) {
-    std::cout << "Could not create the sniffer\n";
-    std::cout << err << std::endl;
+  if (sniffer.init() < 0) {
     return -1;
   }
+
   try {
     midi_input = MidiSetup();
   } catch (const char *err) {
@@ -44,6 +41,7 @@ int main() {
   SineOscillator sineOsc{0.5f, 440.0f};
 
   Synth synth{&sineOsc};
+
   std::thread sniffer_thread =
       std::thread([&note_map, &sniffer, &note_map_mutex, &sniffer_failed]() {
         sniffer.sniff(&note_map, &note_map_mutex);
@@ -68,8 +66,12 @@ int main() {
 
   std::thread midi_synth_thread =
       std::thread([&synth, &note_map, &note_map_mutex, &midi_synth_failed]() {
-        synth.start_midi(&note_map, &note_map_mutex);
+        // temp commented out
+        // synth.start_midi(&note_map, &note_map_mutex);
         // catch the end of the midi synth and let the user know
+        while (true) {
+          std::this_thread::sleep_for(std::chrono::milliseconds(10000));
+        }
         midi_synth_failed = true;
       });
   while (true) {

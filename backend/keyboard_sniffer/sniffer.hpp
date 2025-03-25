@@ -13,8 +13,8 @@ private:
   Window window;
 
 public:
-  KeyboardSniffer();
   void sniff(NoteMap *note_map, std::mutex *note_map_lock);
+  int init();
 };
 
 #endif
