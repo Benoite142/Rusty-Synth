@@ -21,7 +21,6 @@ void async_player_callback(snd_async_handler_t *ahandler) {
   snd_pcm_sframes_t avail;
   int error = 0;
   avail = snd_pcm_avail_update(handle);
-
   while (avail >= BUFFER_SIZE) {
     data->map_mutex->lock();
     if (data->note_map->has_updated_value) {
@@ -29,8 +28,9 @@ void async_player_callback(snd_async_handler_t *ahandler) {
       // now update the frequencies
       if (*data->note_map->notes != -1) {
         data->osc->setFrequency(calculate_frequency(*data->note_map->notes));
+        data->osc->noteOn();
       } else {
-        data->osc->setFrequency(0);
+        data->osc->noteOff();
       }
     }
     data->map_mutex->unlock();

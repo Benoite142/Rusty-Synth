@@ -12,6 +12,8 @@
 #define A4_MIDI_NOTE 69
 #define A4_FREQUENCY 440.0
 
+#define DELTA_TIME 1 / SAMPLE_RATE
+
 const short MIDI_NOTES[] = {48, 49, 50, 51, 52, 53, 54, 55, 56, 57,
                             58, 59, 60, 61, 62, 63, 64, 65, 66, 67,
                             68, 69, 70, 71, 72, 73, 74, 75, 76};

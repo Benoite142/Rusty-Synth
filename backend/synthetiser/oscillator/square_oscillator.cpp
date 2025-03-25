@@ -1,7 +1,6 @@
 #include "oscillator.hpp"
 
-SquareOscillator::SquareOscillator(float amplitude, float freq)
-    : Oscillator(amplitude, freq) {
+SquareOscillator::SquareOscillator(float freq) : Oscillator(freq) {
   offset = 2 * PI * (freq / SAMPLE_RATE);
 }
 
@@ -14,12 +13,16 @@ float SquareOscillator::advance() {
     angle += 2 * (float)PI;
 
   if (angle < (float)PI)
-    return amplitude;
+    return envelope.getAmplitude();
   else
-    return -amplitude;
+    return -envelope.getAmplitude();
 }
 
 void SquareOscillator::setFrequency(float new_freq) {
   frequency = new_freq;
   offset = 2 * PI * (frequency / SAMPLE_RATE);
 }
+
+void SquareOscillator::noteOn() { envelope.noteOn(); }
+
+void SquareOscillator::noteOff() { envelope.noteOff(); }
