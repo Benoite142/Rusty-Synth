@@ -1,4 +1,6 @@
 interface/node_modules
-interface/dist
+interface/dev_build
+interface/release_build
 
 build
+release

@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "module": "commonjs",
-    "outDir": "dist",
+    "outDir": "dev_build",
     "noImplicitAny": true
   },
     "include": [

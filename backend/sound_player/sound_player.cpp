@@ -13,7 +13,6 @@
 
 /// this function has been adapted from juce's source code
 /// https://github.com/juce-framework/JUCE/blob/master/modules/juce_audio_devices/native/juce_ALSA_linux.cpp
-
 bool SoundPlayer::setParameters(unsigned int sampleRate, int numChannels,
                                 int bufferSize) {
   if (handle == nullptr)

@@ -1,14 +1,22 @@
 import { app, BrowserWindow, ipcMain, Menu } from 'electron';
 import * as path from 'path'
 
-const isDevEnv = process.env.NODE_ENV !== 'production'
+const isDevEnv = !app.isPackaged;
+
+const getDirPath = (): string => {
+	return isDevEnv ? __dirname : process.resourcesPath;
+}
 
 const createMainWindow = () => {
 	const window = new BrowserWindow({
+		title: 'rusty synth',
 		width: 1600,
 		height: 1200,
 		webPreferences: {
-			preload: path.join(__dirname, 'preload.js'),
+			// this is dangerous only if fetching on the web
+			// since this project is local this is fine
+			webSecurity: false,
+			preload: path.join(getDirPath(), 'preload.js'),
 		}
 	});
 
@@ -30,9 +38,7 @@ const createMainWindow = () => {
 		window.webContents.openDevTools();
 	}
 
-	// since we are running from dist (compiled to js)
-	// we need to specify the correct path
-	window.loadFile('../src/renderer/index.html');
+	window.loadFile(path.join(getDirPath(), 'renderer/index.html'));
 }
 
 app.whenReady().then(() => {

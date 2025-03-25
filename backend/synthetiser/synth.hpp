@@ -1,15 +1,16 @@
 #ifndef SYNTH
 #define SYNTH
 
+#include "../sound_player/sound_player.hpp"
 #include "../utils/note_map.hpp"
 #include "oscillator/oscillator.hpp"
 #include <alsa/asoundlib.h>
-#include <condition_variable>
 #include <mutex>
 
 class Synth {
 private:
   Oscillator *osc;
+  SoundPlayer *async_player;
 
 public:
   Synth(Oscillator *osc);

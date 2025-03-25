@@ -2,16 +2,46 @@
   "name": "synth-interface",
   "version": "1.0.0",
   "description": "Interface for the synthetiser",
-  "main": "dist/main.js",
+  "main": "dev_build/main.js",
   "scripts": {
-    "build": "tsc",
-    "start": "npm run build && electron --no-sandbox ./dist/main.js"
+    "build": "tsc && npm run copy-files",
+    "copy-files": "copyfiles -u 1 src/**/*.html src/**/*.css dev_build/",
+    "package": "npm run build && electron-builder build",
+    "start": "npm run build && electron --no-sandbox ./dev_build/main.js"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "copyfiles": "^2.4.1",
     "electron": "^34.0.2",
+    "electron-builder": "^25.1.8",
     "typescript": "^5.7.3"
+  },
+  "build": {
+    "appId": "com.SynthetiseurDuo.Synth",
+    "executableName": "Synthetiser",
+    "linux": {
+      "category": "Audio"
+    },
+    "directories": {
+      "output": "release_build"
+    },
+    "files": [
+      "./dev_build/main.js",
+      "./dev_build/preload.js",
+      "./dev_build/renderer/script.js"
+    ],
+    "extraResources": [
+      {
+        "from": "./dev_build/renderer/index.html",
+        "to": "renderer/index.html"
+      },
+      {
+        "from": "./dev_build/renderer/style.css",
+        "to": "renderer/style.css"
+      }
+    ],
+    "extends": null
   }
 }
