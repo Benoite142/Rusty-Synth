@@ -1,7 +1,7 @@
-#include "oscillator.hpp"
+#include "noise_oscillator.hpp"
 #include <cstdlib>
 
-NoiseOscillator::NoiseOscillator(float freq) : Oscillator(freq) {}
+NoiseOscillator::NoiseOscillator() {}
 
 float NoiseOscillator::advance() {
 

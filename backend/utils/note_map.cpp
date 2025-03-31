@@ -1,15 +1,17 @@
 #include "note_map.hpp"
 #include <cstdlib>
+#include <vector>
 
 NoteMap makeEmptyNoteMap() {
   bool *b = static_cast<bool *>(std::malloc(sizeof(bool)));
-  short *c = static_cast<short *>(std::malloc(sizeof(short)));
   *b = false;
-  *c = -1;
-  return NoteMap{.has_updated_value = b, .notes = c};
+  return NoteMap{
+      .has_updated_value = b,
+      .notes = std::vector<Note>(2, Note{.note_value = -1, .released = true})};
 }
 
-void freeNoteMap(NoteMap *nm) {
-  free(nm->has_updated_value);
-  free(nm->notes);
+bool operator==(Note note_a, Note note_b) {
+  return note_a.note_value == note_b.note_value;
 }
+
+void freeNoteMap(NoteMap *nm) { free(nm->has_updated_value); }

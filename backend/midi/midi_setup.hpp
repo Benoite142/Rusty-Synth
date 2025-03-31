@@ -4,7 +4,6 @@
 #include "../utils/note_map.hpp"
 #include <alsa/asoundlib.h>
 #include <mutex>
-#include <thread>
 
 class MidiSetup {
 private:

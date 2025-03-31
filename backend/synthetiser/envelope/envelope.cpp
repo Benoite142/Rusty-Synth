@@ -52,6 +52,9 @@ void EnvelopeADSR::noteOn() {
 }
 
 void EnvelopeADSR::noteOff() {
+  if (state == RELEASE) {
+    return;
+  }
   state = RELEASE;
   releaseStartAmplitude = amplitude;
 }

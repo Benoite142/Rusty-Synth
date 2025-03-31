@@ -197,8 +197,8 @@ void SoundPlayer::setup_pipe() {
   }
 }
 
-void SoundPlayer::playAsync(float *buffer, Oscillator *osc, NoteMap *note_map,
-                            std::mutex *map_mutex) {
+void SoundPlayer::playAsync(float *buffer, std::vector<Oscillator> *osc,
+                            NoteMap *note_map, std::mutex *map_mutex) {
   int error = 0;
   setup_pipe();
   private_data data{
@@ -217,39 +217,43 @@ void SoundPlayer::playAsync(float *buffer, Oscillator *osc, NoteMap *note_map,
 
   /// initial write
   map_mutex->lock();
-  if (note_map->has_updated_value) {
+  for (size_t i = 0; i < note_map->notes.size(); ++i) {
     // update frequencies if need be
-    if (*note_map->notes != -1) {
-      osc->setFrequency(calculate_frequency(*note_map->notes));
-      osc->noteOn();
+    if (note_map->notes[i].note_value != -1) {
+      auto note = calculate_frequency(note_map->notes[i].note_value);
+
+      (*osc)[i].setFrequency(note);
+      (*osc)[i].noteOn();
     } else {
-      osc->noteOff();
+      (*osc)[i].noteOff();
     }
 
     *note_map->has_updated_value = false;
-  }
-  map_mutex->unlock();
-  for (int count = 0; count < 2; count++) {
-    for (int i = 0; i < BUFFER_SIZE; ++i) {
-
-      buffer[i] = osc->advance(); // floatTo16bits(osc->advance());
-    }
-
-    do {
-      error = snd_pcm_writei(handle, buffer, BUFFER_SIZE);
-
-      if (error < 0) {
-        std::cout << "error initial write " << snd_strerror(error) << std::endl;
-
-        if (try_recover_pipe(handle, error) < 0) {
-          std::cout << "could not recover pipe\n";
-          exit(-1);
+    map_mutex->unlock();
+    for (int count = 0; count < 2; count++) {
+      for (int i = 0; i < BUFFER_SIZE; ++i) {
+        for (auto &sineOsc : *osc) {
+          buffer[i] = sineOsc.advance(); // floatTo16bits(osc->advance());
         }
       }
-    } while (error < 0);
 
-    if (error != BUFFER_SIZE) {
-      std::cout << "initial write unexpected amount\n";
+      do {
+        error = snd_pcm_writei(handle, buffer, BUFFER_SIZE);
+
+        if (error < 0) {
+          std::cout << "error initial write " << snd_strerror(error)
+                    << std::endl;
+
+          if (try_recover_pipe(handle, error) < 0) {
+            std::cout << "could not recover pipe\n";
+            exit(-1);
+          }
+        }
+      } while (error < 0);
+
+      if (error != BUFFER_SIZE) {
+        std::cout << "initial write unexpected amount\n";
+      }
     }
   }
   // not started yet, but ring buffer populated

@@ -6,6 +6,7 @@
 #include <alsa/asoundlib.h>
 #include <mutex>
 #include <string>
+#include <vector>
 
 class SoundPlayer {
 private:
@@ -18,7 +19,7 @@ private:
 
 public:
   SoundPlayer();
-  void playAsync(float *buffer, Oscillator *osc, NoteMap *note_map,
+  void playAsync(float *buffer, std::vector<Oscillator> *osc, NoteMap *note_map,
                  std::mutex *map_mutex);
 
 private:
