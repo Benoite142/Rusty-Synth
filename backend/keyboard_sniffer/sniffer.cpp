@@ -46,8 +46,9 @@ void KeyboardSniffer::sniff(NoteMap *note_map, std::mutex *note_map_lock) {
 
   // find the correct window here
   Window root = DefaultRootWindow(display);
-  XGrabKey(display, AnyKey, AnyModifier, root, False, GrabModeAsync,
-           GrabModeAsync);
+
+  XGrabKeyboard(display, window, false, GrabModeAsync, GrabModeAsync,
+                CurrentTime);
 
   int supported_autorepeat_detect;
 
@@ -60,7 +61,7 @@ void KeyboardSniffer::sniff(NoteMap *note_map, std::mutex *note_map_lock) {
 
   XEvent event;
   int error;
-
+  size_t idx = 0;
   while (true) {
     XLockDisplay(display);
 
@@ -78,19 +79,28 @@ void KeyboardSniffer::sniff(NoteMap *note_map, std::mutex *note_map_lock) {
       note_map_lock->lock();
       // key press triggers multiple times
       // bypassing repeats by checking if it not currently active
-      if (*note_map->notes == -1) {
-        *note_map->notes = findMidiNote(*mapKeyCodeToString(event.xkey));
+      short midi_note = findMidiNote(*mapKeyCodeToString(event.xkey));
+
+      auto it = std::find(note_map->notes.begin(), note_map->notes.end(),
+                          Note{.note_value = midi_note});
+      if (it == note_map->notes.end() || it->released) {
+        note_map->notes[idx++ % note_map->notes.size()] = {
+            .note_value = midi_note, .released = false};
         *note_map->has_updated_value = true;
       }
-
       note_map_lock->unlock();
     }
 
     if (event.type == KeyRelease) {
-      // only catching releases once, so no need to double check in the map
+      short midi_note = findMidiNote(*mapKeyCodeToString(event.xkey));
+      auto it = std::find(note_map->notes.begin(), note_map->notes.end(),
+                          Note{.note_value = midi_note});
       note_map_lock->lock();
-      *note_map->notes = -1;
-      *note_map->has_updated_value = true;
+      if (it != note_map->notes.end()) {
+        it->released = true;
+        *note_map->has_updated_value = true;
+      }
+
       note_map_lock->unlock();
     }
 

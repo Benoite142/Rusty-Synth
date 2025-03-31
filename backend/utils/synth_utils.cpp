@@ -1,4 +1,6 @@
 #include "synth_utils.hpp"
+#include "../synthetiser/constants.h"
+#include "note_map.hpp"
 #include "sound_conversions.hpp"
 #include <iostream>
 
@@ -22,23 +24,36 @@ void async_player_callback(snd_async_handler_t *ahandler) {
   int error = 0;
   avail = snd_pcm_avail_update(handle);
   while (avail >= BUFFER_SIZE) {
+
     data->map_mutex->lock();
     if (data->note_map->has_updated_value) {
-      *data->note_map->has_updated_value = false;
-      // now update the frequencies
-      if (*data->note_map->notes != -1) {
-        data->osc->setFrequency(calculate_frequency(*data->note_map->notes));
-        data->osc->noteOn();
-      } else {
-        data->osc->noteOff();
+      for (size_t i = 0; i < data->note_map->notes.size(); ++i) {
+
+        // now update the frequencies
+        Note note = data->note_map->notes[i];
+        if (!note.released) {
+          auto freq = calculate_frequency(note.note_value);
+
+          (*data->osc)[i].setFrequency(freq);
+          (*data->osc)[i].noteOn();
+        } else {
+          (*data->osc)[i].noteOff();
+        }
       }
     }
     data->map_mutex->unlock();
 
     for (int i = 0; i < BUFFER_SIZE; ++i) {
-      buffer[i] = data->osc->advance();
+      buffer[i] = 0;
+      for (size_t j = 0; j < data->note_map->notes.size(); ++j) {
+        buffer[i] += (*data->osc)[j].advance();
+      }
+      // so the notes dont clip with themeselves
+      // might need to find a better way to do this
+      if (!data->note_map->notes.empty()) {
+        buffer[i] /= data->note_map->notes.size();
+      }
     }
-
     error = snd_pcm_writei(handle, buffer, BUFFER_SIZE);
 
     if (error < 0) {

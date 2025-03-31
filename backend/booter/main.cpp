@@ -32,15 +32,13 @@ int main() {
   // this needs rethinking as most errors are not caught with an exception
   // pattern but simply lead to early exits with error codes a solution would be
   // to return a value from functions
-  std::atomic_bool sniffer_failed = false, midi_synth_failed = false,
-                   keyboard_synth_failed = false, midi_setup_failed = false;
+  std::atomic_bool sniffer_failed = false, keyboard_synth_failed = false,
+                   midi_setup_failed = false;
 
   NoteMap note_map = makeEmptyNoteMap();
   std::mutex note_map_mutex;
 
-  SineOscillator sineOsc{440.0f};
-
-  Synth synth{&sineOsc};
+  Synth synth;
 
   std::thread sniffer_thread =
       std::thread([&note_map, &sniffer, &note_map_mutex, &sniffer_failed]() {
@@ -64,16 +62,6 @@ int main() {
         keyboard_synth_failed = true;
       });
 
-  std::thread midi_synth_thread =
-      std::thread([&synth, &note_map, &note_map_mutex, &midi_synth_failed]() {
-        // temp commented out
-        // synth.start_midi(&note_map, &note_map_mutex);
-        // catch the end of the midi synth and let the user know
-        while (true) {
-          std::this_thread::sleep_for(std::chrono::milliseconds(10000));
-        }
-        midi_synth_failed = true;
-      });
   while (true) {
 
     if (midi_setup_failed) {
@@ -91,11 +79,6 @@ int main() {
       exit(-1);
     }
 
-    if (midi_synth_failed) {
-      std::cout << "midi thread has failed, closing program\n";
-      exit(-1);
-    }
-
     std::this_thread::sleep_for(std::chrono::milliseconds(1000));
   }
 
@@ -103,7 +86,6 @@ int main() {
   sniffer_thread.join();
   midi_input_thread.join();
   keyboard_synth_thread.join();
-  midi_synth_thread.join();
 
   freeNoteMap(&note_map);
 }

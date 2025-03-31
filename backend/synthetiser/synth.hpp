@@ -6,16 +6,16 @@
 #include "oscillator/oscillator.hpp"
 #include <alsa/asoundlib.h>
 #include <mutex>
+#include <vector>
 
 class Synth {
 private:
-  Oscillator *osc;
+  std::vector<Oscillator> *osc;
   SoundPlayer *async_player;
 
 public:
-  Synth(Oscillator *osc);
+  Synth();
   void start_keyboard(NoteMap *nm, std::mutex *map_mutex);
-  void start_midi(NoteMap *nm, std::mutex *map_mutex);
 };
 
 #endif

@@ -13,7 +13,7 @@ void writeDataToBuffer(std::vector<short> *buffer, Oscillator *osc,
 
 struct private_data {
   float *buffer;
-  Oscillator *osc;
+  std::vector<Oscillator> *osc;
   NoteMap *note_map;
   std::mutex *map_mutex;
 };
