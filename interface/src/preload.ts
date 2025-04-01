@@ -7,6 +7,8 @@ import { contextBridge, ipcRenderer } from 'electron';
 //
 // when adding something here, remember to add it to the exposed type
 contextBridge.exposeInMainWorld('electronAPI', {
-	sendToMainProcess: (arg: string) => ipcRenderer.invoke('boiler-plate-event', arg),
-	onUpdateCounter: (callback: (v: number) => void) => ipcRenderer.on('update-counter', (_, value: number) => callback(value))
+	endKeyboardGrab: (callback: () => void) => ipcRenderer.on('end-keyboard-grab', () => callback()),
+	selectDeviceName: (callback: (args: string[]) => void) => ipcRenderer.on('select-device', (_event, args: string[]) => callback(args)),
+	sendMessage: (message: string) => ipcRenderer.invoke('send-message', message),
+	grabKeyboard: () => ipcRenderer.invoke('grab-keyboard')
 });

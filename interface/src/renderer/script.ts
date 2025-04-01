@@ -1,11 +1,52 @@
-let counterSpan = document.getElementById("counter");
+class MenuSelectionDialog {
+  private dialog: HTMLDialogElement;
+  constructor(dialogBox: HTMLDialogElement) {
+    this.dialog = dialogBox;
+    this.dialog.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        e.preventDefault();
+      }
+    });
+  }
 
-function attachKnobListener(
+  public addDialog = <I>(selectionTitle: string, items: I[], callBack: (value: I | number) => void, returnType: 'idx' | 'value'): void => {
+    // would only want to alter the options and title
+    const options = items.map((item, idx) => `<option value="${idx}">${item}</option>`).join('');
+    this.dialog.setHTMLUnsafe(`<form>
+      <p>
+        <label>
+         ${selectionTitle} 
+          <select>
+            ${options}
+          </select>
+        </label>
+      </p>
+      <div>
+        <button id="confirm-btn" value="default">Confirm Selection</button>
+      </div>
+    </form>`);
+    this.dialog.showModal();
+    const selector = document.querySelector('select');
+    document.getElementById('confirm-btn').addEventListener('click', (e) => {
+      e.preventDefault();
+      callBack(returnType === 'idx' ? selector.value as any as number : items[Number(selector.value)])
+      this.dialog.close();
+    });
+  }
+}
+
+type GlobalVariables = {
+  menuDialog: MenuSelectionDialog | undefined
+}
+
+const globalVariables: GlobalVariables = { menuDialog: undefined }
+
+const attachKnobListener = (
   knob: HTMLElement | null,
   minAngle = 40,
   maxAngle = 320,
   onChange?: (value: number) => void
-) {
+) => {
   if (!knob) return;
 
   let rotating = false;
@@ -44,7 +85,7 @@ function attachKnobListener(
   });
 }
 
-function calculateDegree(e: MouseEvent, knob: HTMLElement): number {
+const calculateDegree = (e: MouseEvent, knob: HTMLElement): number => {
   const rect = knob.getBoundingClientRect();
   const knobCenterX = rect.left + rect.width / 2;
   const knobCenterY = rect.top + rect.height / 2;
@@ -58,10 +99,10 @@ function calculateDegree(e: MouseEvent, knob: HTMLElement): number {
   return deg < 0 ? deg : deg + 360;
 }
 
-function attachSliderListener(
+const attachSliderListener = (
   slider: HTMLInputElement,
   onChange?: (normalized: number) => void
-) {
+) => {
   if (!slider) return;
 
   const minValue = isNaN(Number(slider.min)) ? 0 : Number(slider.min);
@@ -74,11 +115,9 @@ function attachSliderListener(
   });
 }
 
-// button is not on document before on load
-// could be used to initialise global values
 window.onload = () => {
-  const actionButton = document.getElementById("action-button");
-  const valueFromMainSlot = document.getElementById("value-from-main");
+  globalVariables.menuDialog = new MenuSelectionDialog(document.getElementById('menu-dialog') as HTMLDialogElement);
+  const keyboardGrabButton = document.getElementById('grab-keyboard-button');
   const high_pass_knob = document.getElementById("high-pass-knob");
   const attack_knob_op1 = document.getElementById("attack-knob-op1");
   const low_pass_knob = document.getElementById("low-pass-knob");
@@ -91,7 +130,6 @@ window.onload = () => {
 
   const MIN_ANGLE = 40; // Min rotation (Bottom-left)
   const MAX_ANGLE = 320; // Max rotation (Bottom-right)
-  // chances are it did not get picked up initially
   let on_off = false;
 
   if (syncButton) {
@@ -102,9 +140,6 @@ window.onload = () => {
     });
   }
 
-  if (!counterSpan) {
-    counterSpan = document.getElementById("counter");
-  }
   if (high_pass_knob)
     attachKnobListener(high_pass_knob, MIN_ANGLE, MAX_ANGLE, (value) => {
       console.log("Knob-Value", value);
@@ -124,14 +159,19 @@ window.onload = () => {
     attachSliderListener(main_volume, (normalizeValue) => {
       console.log("nromalizedvalue", normalizeValue);
     });
-  actionButton?.addEventListener("click", async () => {
-    const valueFromMain = await window.electronAPI.sendToMainProcess(
-      "value from ui"
-    );
-    valueFromMainSlot.innerText = valueFromMain;
+
+  keyboardGrabButton?.addEventListener('click', () => {
+    window.electronAPI.grabKeyboard();
   });
 };
 
-window.electronAPI.onUpdateCounter((value: number) => {
-  counterSpan.innerText = (Number(counterSpan.innerText) + value).toString();
+window.electronAPI.endKeyboardGrab(() => {
+  console.log('ended keyboard grabbing');
+});
+
+
+window.electronAPI.selectDeviceName((deviceNames: string[]) => {
+  globalVariables.menuDialog?.addDialog('Select Device', deviceNames, (idx: number) => {
+    window.electronAPI.sendMessage(`selected device index ${idx}`);
+  }, 'idx');
 });

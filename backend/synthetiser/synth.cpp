@@ -3,13 +3,20 @@
 #include "constants.h"
 #include "oscillator/oscillator.hpp"
 
-Synth::Synth() {
+Synth::Synth(
+    std::function<size_t(std::vector<std::string> *)> selectDeviceCallback) {
   Oscillator Osc{0.0f, Waveform::SINE};
   osc = new std::vector<Oscillator>{Osc, Osc};
-  async_player = new SoundPlayer();
+  this->selectDeviceCallback = selectDeviceCallback;
+}
+
+Synth::~Synth() {
+  free(osc);
+  free(async_player);
 }
 
 void Synth::start_keyboard(NoteMap *nm, std::mutex *map_mutex) {
+  async_player = new SoundPlayer(selectDeviceCallback);
   float buffer[BUFFER_SIZE];
 
   // playing in async mode still uses up a thread

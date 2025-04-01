@@ -9,7 +9,6 @@
 #include <alsa/pcm.h>
 #include <iostream>
 #include <unistd.h>
-#include <vector>
 
 /// this function has been adapted from juce's source code
 /// https://github.com/juce-framework/JUCE/blob/master/modules/juce_audio_devices/native/juce_ALSA_linux.cpp
@@ -131,12 +130,11 @@ bool SoundPlayer::setParameters(unsigned int sampleRate, int numChannels,
 // end of juce adapted code
 ////////////////
 
-SoundPlayer::SoundPlayer() {
+SoundPlayer::SoundPlayer(
+    std::function<size_t(std::vector<std::string> *)> selectDeviceCallback) {
   int error;
 
   // device selection logic
-  std::string selected_device_name;
-
   char **hints;
   int err = snd_device_name_hint(-1, "pcm", (void ***)&hints);
 
@@ -156,27 +154,19 @@ SoundPlayer::SoundPlayer() {
         // valid name here, select only plughw types as they are most reliable
         if (name.length() > 7 && name.substr(0, 7) == "plughw:") {
           device_names.push_back(name);
-          std::cout << "device " << device_number++ << ": " << name
-                    << std::endl;
         }
       }
       n++;
     }
 
-    std::cout << "enter the number of the wanted device: ";
-    std::cin >> device_number;
+    size_t device_idx = selectDeviceCallback(&device_names);
 
-    try {
-      selected_device_name = device_names.at(device_number);
-      std::cout << "selected device is: " << selected_device_name << std::endl;
-    } catch (...) {
-      std::cout << "invalid device number, default device will be used\n";
-      exit(-1);
-    }
+    // assume always receiving correct idx
+    selected_device = device_names.at(device_idx);
+    std::cout << "selected device is: " << selected_device << std::endl;
   }
 
   snd_device_name_free_hint((void **)hints);
-  selected_device = selected_device_name;
 }
 
 void SoundPlayer::setup_pipe() {

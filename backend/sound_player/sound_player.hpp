@@ -4,6 +4,7 @@
 #include "../synthetiser/oscillator/oscillator.hpp"
 #include "../utils/note_map.hpp"
 #include <alsa/asoundlib.h>
+#include <functional>
 #include <mutex>
 #include <string>
 #include <vector>
@@ -18,7 +19,8 @@ private:
   int numChannelsRunning;
 
 public:
-  SoundPlayer();
+  SoundPlayer(
+      std::function<size_t(std::vector<std::string> *)> selectDeviceCallback);
   void playAsync(float *buffer, std::vector<Oscillator> *osc, NoteMap *note_map,
                  std::mutex *map_mutex);
 

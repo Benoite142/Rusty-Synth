@@ -13,7 +13,7 @@ private:
   Window window;
 
 public:
-  void sniff(NoteMap *note_map, std::mutex *note_map_lock);
+  int sniff(NoteMap *note_map, std::mutex *note_map_lock);
   int init();
 };
 
