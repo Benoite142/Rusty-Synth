@@ -30,7 +30,7 @@
     "files": [
       "./dev_build/main.js",
       "./dev_build/preload.js",
-      "./dev_build/renderer/script.js"
+      "./dev_build/renderer/*.js"
     ],
     "extraResources": [
       {

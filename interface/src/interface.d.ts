@@ -1,6 +1,8 @@
 export interface IMyAPI {
-	sendToMainProcess: (arg: string) => Promise<string>
-	onUpdateCounter: (callback: (n: number) => void) => void
+	sendMessage: (message: string) => void
+	endKeyboardGrab: (callback: () => void) => void,
+	selectDeviceName: (callback: (args: string[]) => void) => void,
+	grabKeyboard: () => void
 }
 
 declare global {

@@ -1,5 +1,6 @@
-import { app, BrowserWindow, ipcMain, Menu } from 'electron';
+import { app, BrowserWindow, ipcMain } from 'electron';
 import * as path from 'path'
+import { ConnectionHandler } from './connection_handler';
 
 const isDevEnv = !app.isPackaged;
 
@@ -7,7 +8,7 @@ const getDirPath = (): string => {
 	return isDevEnv ? __dirname : process.resourcesPath;
 }
 
-const createMainWindow = () => {
+const createMainWindow = (): BrowserWindow => {
 	const window = new BrowserWindow({
 		title: 'rusty synth',
 		width: 1600,
@@ -20,34 +21,27 @@ const createMainWindow = () => {
 		}
 	});
 
-	const menu = Menu.buildFromTemplate([
-		{
-			label: app.name,
-			submenu: [
-				{
-					click: () => window.webContents.send('update-counter', 1),
-					label: 'Increment me!'
-				}
-			],
-		}
-	]);
-
-	Menu.setApplicationMenu(menu);
-
 	if (isDevEnv) {
 		window.webContents.openDevTools();
 	}
 
 	window.loadFile(path.join(getDirPath(), 'renderer/index.html'));
+	return window;
 }
 
 app.whenReady().then(() => {
-	ipcMain.handle('boiler-plate-event', (_, arg: string) => {
-		console.log(`received ${arg} from the ui`);
-		return 'received your value, chief!';
+	const win = createMainWindow();
+
+	const connectionHandler = new ConnectionHandler(win);
+
+	ipcMain.handle('send-message', (_event, arg: string) => {
+		console.log('invoked send message');
+		connectionHandler.sendMessage(arg);
 	});
 
-	createMainWindow();
+	ipcMain.handle('grab-keyboard', (_event) => {
+		connectionHandler.sendMessage('start-grabbing-keyboard-input');
+	});
 
 	app.on('activate', () => {
 		if (BrowserWindow.getAllWindows().length === 0) {

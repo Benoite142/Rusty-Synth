@@ -1,5 +1,5 @@
 #include "midi_setup.hpp"
-#include <chrono>
+#include <algorithm>
 #include <iostream>
 #include <mutex>
 

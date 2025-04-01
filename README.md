@@ -7,6 +7,7 @@
 Two main libraries are needed to compile the program:
 - libasound2-dev 
 - libx11-dev
+- libboost-all-dev
 
 As for the tools we use, you will need `make`, alongside a valid CPP compiler (we use g++ with std-c++20).
 

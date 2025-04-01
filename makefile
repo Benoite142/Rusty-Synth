@@ -2,7 +2,7 @@ CPPFLAGS = -std=c++20
 LIBFLAGS = -lX11 -lasound
 synthObjects = ./backend/synthetiser/*.cpp ./backend/synthetiser/oscillator/*.cpp ./backend/sound_player/*.cpp ./backend/midi/*.cpp ./backend/synthetiser/envelope/*.cpp
 utils = ./backend/utils/*.cpp
-synth_main_files = ./backend/keyboard_sniffer/sniffer.cpp ./backend/booter/main.cpp
+synth_main_files = ./backend/keyboard_sniffer/sniffer.cpp ./backend/controller/*.cpp ./backend/messager/*.cpp ./backend/booter/main.cpp 
 
 synth:
 	mkdir -p ./build
@@ -14,7 +14,7 @@ run_synth:
 
 build: clean_build
 	mkdir -p ./build
-	g++ $(CPPFLAGS) -o ./build/app $(synthObjects) $(utils) ./backend/keyboard_sniffer/sniffer.cpp ./backend/booter/main.cpp $(LIBFLAGS)
+	g++ $(CPPFLAGS) -o ./build/app $(synthObjects) $(utils) $(synth_main_files) $(LIBFLAGS)
 
 clang:
 	mkdir -p ./build

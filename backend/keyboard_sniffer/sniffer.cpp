@@ -1,8 +1,10 @@
 #include "sniffer.hpp"
 #include "../utils/sound_conversions.hpp"
 #include "../utils/x_utils.hpp"
+#include <X11/X.h>
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
+#include <algorithm>
 #include <chrono>
 #include <iostream>
 #include <mutex>
@@ -42,11 +44,7 @@ int KeyboardSniffer::init() {
   return -1;
 }
 
-void KeyboardSniffer::sniff(NoteMap *note_map, std::mutex *note_map_lock) {
-
-  // find the correct window here
-  Window root = DefaultRootWindow(display);
-
+int KeyboardSniffer::sniff(NoteMap *note_map, std::mutex *note_map_lock) {
   XGrabKeyboard(display, window, false, GrabModeAsync, GrabModeAsync,
                 CurrentTime);
 
@@ -69,11 +67,12 @@ void KeyboardSniffer::sniff(NoteMap *note_map, std::mutex *note_map_lock) {
 
     if (error < 0) {
       std::cout << "error reading xevent\n";
+      return -1;
     }
 
     if (event.type == KeyPress) {
       if (*mapKeyCodeToString(event.xkey) == 'E') {
-        std::cout << "exiting sniffer\n";
+        XUnlockDisplay(display);
         break;
       }
       note_map_lock->lock();
@@ -107,5 +106,5 @@ void KeyboardSniffer::sniff(NoteMap *note_map, std::mutex *note_map_lock) {
     XUnlockDisplay(display);
   }
 
-  XUngrabKey(display, AnyKey, AnyModifier, root);
+  return 0;
 }
