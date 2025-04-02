@@ -19,6 +19,8 @@ public:
   Synth(std::function<size_t(std::vector<std::string> *)> selectDeviceCallback);
   ~Synth();
   void start_keyboard(NoteMap *nm, std::mutex *map_mutex);
+  void updateOperator(size_t operator_index, std::string operator_field,
+                      double value);
 };
 
 #endif

@@ -4,6 +4,7 @@
 #include "envelope/envelope.hpp"
 #include "operator/operator.hpp"
 #include "oscillator/oscillator.hpp"
+#include <iostream>
 
 Synth::Synth(
     std::function<size_t(std::vector<std::string> *)> selectDeviceCallback)
@@ -22,4 +23,26 @@ void Synth::start_keyboard(NoteMap *nm, std::mutex *map_mutex) {
 
   // for now asserting here since we should never reach
   assert(false);
+}
+
+void Synth::updateOperator(size_t operator_index, std::string operator_field,
+                           double value) {
+  std::cout << "tried to update operator " << operator_index << "'s "
+            << operator_field << " with " << value << std::endl;
+  if (operator_field.compare("attack") == 0) {
+    synth_operator.updateAttack(value);
+    return;
+  }
+  if (operator_field.compare("decay") == 0) {
+    synth_operator.updateDecay(value);
+    return;
+  }
+  if (operator_field.compare("sustain") == 0) {
+    synth_operator.updateSustain(value);
+    return;
+  }
+  if (operator_field.compare("release") == 0) {
+    synth_operator.updateRelease(value);
+    return;
+  }
 }

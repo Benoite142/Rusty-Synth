@@ -36,7 +36,7 @@ void async_player_callback(snd_async_handler_t *ahandler) {
 
           data->synth_operator->updateFrequency(i, freq);
         } else {
-          data->synth_operator->release(i);
+          data->synth_operator->releaseNote(i);
         }
       }
     }

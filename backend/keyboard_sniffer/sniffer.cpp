@@ -81,7 +81,6 @@ int KeyboardSniffer::sniff(NoteMap *note_map, std::mutex *note_map_lock) {
       // bypassing repeats by checking if it not currently active
       short midi_note = findMidiNote(*mapKeyCodeToString(event.xkey));
       if (midi_note != -1) {
-        std::cout << "note " << midi_note << std::endl;
         note_map_lock->lock();
         auto it = std::find(note_map->notes.begin(), note_map->notes.end(),
                             Note{.note_value = midi_note});
@@ -103,7 +102,6 @@ int KeyboardSniffer::sniff(NoteMap *note_map, std::mutex *note_map_lock) {
         it->released = true;
         *note_map->has_updated_value = true;
       }
-
       note_map_lock->unlock();
     }
 

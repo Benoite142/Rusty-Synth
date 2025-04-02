@@ -4,6 +4,23 @@
 #include <functional>
 #include <iostream>
 
+std::vector<std::string> split_string(std::string str, char splitting_char) {
+  std::vector<std::string> splitted;
+  std::string current;
+  for (auto it = str.begin(); it != str.end(); ++it) {
+    if (*it == splitting_char) {
+      splitted.push_back(current);
+      current.clear();
+    } else {
+      current.push_back(*it);
+    }
+  }
+
+  splitted.push_back(current);
+
+  return splitted;
+}
+
 size_t GlobalController::selectDevice(std::vector<std::string> *device_names) {
   // need to sync back with messenger (condition_variable)
   // to know when the selection has been completed
@@ -14,7 +31,6 @@ size_t GlobalController::selectDevice(std::vector<std::string> *device_names) {
     messager.sendMessage(*device);
   }
   messager.sendMessage("end of select devices");
-
   {
     std::unique_lock lock{wait_response_mutex};
     wait_response.wait(lock);
@@ -31,6 +47,11 @@ void GlobalController::handleMessageReception(std::string message) {
     size_t idx =
         std::stoi(message.substr(message.length() - 2, message.length() - 2));
     notifyDeviceSelection(idx);
+  } else if (message.substr(0, 2).compare("op") == 0) {
+    // this means we have an update for an operator
+    std::vector<std::string> message_parts = split_string(message, ' ');
+    synth.updateOperator(std::stoi(message_parts[1]), message_parts[2],
+                         std::stod(message_parts[3]));
   } else {
     std::cout << "message received does not match any " << message << std::endl;
     messager.sendMessage(message.append(" from server ;)"));

@@ -13,10 +13,13 @@ private:
 public:
   EnvelopeADSR(double attackTime = 1.6, double decayTime = 1.5,
                double sustainAmplitude = 0.5, double releaseTime = 1.5);
-
   double getAttackTime();
   double getDecayTime();
   double getSustainAmplitude();
   double getReleaseTime();
+  void setAttackTime(double value);
+  void setDecayTime(double value);
+  void setSustainAmplitude(double value);
+  void setReleaseTime(double value);
 };
 #endif

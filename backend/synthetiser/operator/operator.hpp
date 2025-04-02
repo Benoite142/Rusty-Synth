@@ -5,7 +5,7 @@
 #include <vector>
 
 class Operator {
-protected:
+private:
   std::vector<Oscillator> oscs;
   size_t numberOfVoices;
   float amplitude;
@@ -21,7 +21,11 @@ public:
   void setWaveForm(Waveform newWaveform);
   void updateFrequency(size_t index, double note);
   float advance();
-  void release(size_t index);
+  void releaseNote(size_t index);
+  void updateAttack(double value);
+  void updateDecay(double value);
+  void updateSustain(double value);
+  void updateRelease(double value);
 };
 
 #endif

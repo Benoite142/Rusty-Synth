@@ -1,5 +1,6 @@
 #include "operator.hpp"
 #include <cstddef>
+#include <iostream>
 #include <vector>
 
 Operator::Operator(size_t numberOfVoices, float amplitude,
@@ -47,4 +48,24 @@ float Operator::advance() {
   return sum;
 }
 
-void Operator::release(size_t index) { oscs[index].noteOff(); }
+void Operator::releaseNote(size_t index) { oscs[index].noteOff(); }
+
+void Operator::updateAttack(double value) {
+  std::cout << "operator attack\n";
+  envelope.setAttackTime(value);
+}
+
+void Operator::updateDecay(double value) {
+  std::cout << "operator decay\n";
+  envelope.setDecayTime(value);
+}
+
+void Operator::updateSustain(double value) {
+  std::cout << "operator sustain\n";
+  envelope.setSustainAmplitude(value);
+}
+
+void Operator::updateRelease(double value) {
+  std::cout << "operator release\n";
+  envelope.setReleaseTime(value);
+}
