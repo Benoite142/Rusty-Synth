@@ -1,3 +1,6 @@
+const MIN_ANGLE = 40; // Min rotation (Bottom-left)
+const MAX_ANGLE = 320; // Max rotation (Bottom-right)
+
 class MenuSelectionDialog {
   private dialog: HTMLDialogElement;
   constructor(dialogBox: HTMLDialogElement) {
@@ -35,26 +38,82 @@ class MenuSelectionDialog {
   }
 }
 
-type GlobalVariables = {
-  menuDialog: MenuSelectionDialog | undefined
+type Operator = {
+  wave_form: HTMLSelectElement | undefined,
+  attack: HTMLInputElement | undefined,
+  decay: HTMLInputElement | undefined,
+  sustain: HTMLInputElement | undefined,
+  release: HTMLInputElement | undefined,
 }
 
-const globalVariables: GlobalVariables = { menuDialog: undefined }
+type GlobalVariables = {
+  menuDialog: MenuSelectionDialog | undefined,
+  operators: {
+    '1': Operator | undefined,
+    '2': Operator | undefined,
+    '3': Operator | undefined,
+    '4': Operator | undefined,
+  },
+}
+
+const globalVariables: GlobalVariables = {
+  menuDialog: undefined, operators: { '1': undefined, '2': undefined, '3': undefined, '4': undefined }
+}
+
+const initOperator = (operator_number: number): Operator => {
+  const operator = {
+    wave_form: document.getElementById(`wave-form-selector-${operator_number}`) as HTMLSelectElement,
+    attack: document.getElementById(`attack-knob-${operator_number}`) as HTMLInputElement,
+    decay: document.getElementById(`decay-knob-${operator_number}`) as HTMLInputElement,
+    sustain: document.getElementById(`sustain-knob-${operator_number}`) as HTMLInputElement,
+    release: document.getElementById(`release-knob-${operator_number}`) as HTMLInputElement,
+  }
+
+  // operator.wave_form?.addEventListener('
+
+  attachKnobListener(operator.attack, (value) => {
+    window.electronAPI.sendMessage(`op ${operator_number} attack ${value}`);
+  });
+
+  attachKnobListener(operator.decay, (value) => {
+    window.electronAPI.sendMessage(`op ${operator_number} decay ${value}`);
+  });
+
+  attachKnobListener(operator.sustain, (value) => {
+    window.electronAPI.sendMessage(`op ${operator_number} sustain ${value}`);
+  });
+
+  attachKnobListener(operator.release, (value) => {
+    window.electronAPI.sendMessage(`op ${operator_number} release ${value}`);
+  });
+
+  return operator;
+}
 
 const attachKnobListener = (
   knob: HTMLElement | null,
-  minAngle = 40,
-  maxAngle = 320,
-  onChange?: (value: number) => void
+  onChange?: (value: number) => void,
+  minAngle = MIN_ANGLE,
+  maxAngle = MAX_ANGLE,
 ) => {
-  if (!knob) return;
+  if (knob === null) return;
 
   let rotating = false;
   let currentAngle = 40;
+  let normalizedValue = 0;
 
   knob.addEventListener("mousedown", (e) => {
-    rotating = true;
     e.preventDefault();
+    console.log(e.x, knob.getBoundingClientRect().x + knob.clientWidth
+      , knob.getBoundingClientRect().x
+      , e.y, knob.getBoundingClientRect().y + knob.clientHeight
+      , knob.getBoundingClientRect().y);
+    if (e.x <= knob.getBoundingClientRect().x + knob.clientWidth
+      && e.x >= knob.getBoundingClientRect().x
+      && e.y <= knob.getBoundingClientRect().y + knob.clientHeight
+      && e.y >= knob.getBoundingClientRect().y) {
+      rotating = true;
+    }
   });
 
   document.addEventListener("mousemove", (e) => {
@@ -71,17 +130,19 @@ const attachKnobListener = (
       knob.style.transform = `rotate(${currentAngle}deg)`;
 
       // from 0 to 1
-      const normalizeValue = (currentAngle - minAngle) / (maxAngle - minAngle);
+      normalizedValue = (currentAngle - minAngle) / (maxAngle - minAngle);
       knob.style.setProperty(
         "--knob-after-opacity",
-        `${normalizeValue * 100}%`
+        `${normalizedValue * 100}%`
       );
-      onChange?.(normalizeValue);
     }
   });
 
   document.addEventListener("mouseup", () => {
-    rotating = false;
+    if (rotating) {
+      onChange?.(normalizedValue);
+      rotating = false;
+    }
   });
 }
 
@@ -96,7 +157,7 @@ const calculateDegree = (e: MouseEvent, knob: HTMLElement): number => {
 
   const deg = rad * (180 / Math.PI) - 90; // Adjust offset
 
-  return deg < 0 ? deg : deg + 360;
+  return deg < 0 ? deg + 360 : deg;
 }
 
 const attachSliderListener = (
@@ -117,9 +178,14 @@ const attachSliderListener = (
 
 window.onload = () => {
   globalVariables.menuDialog = new MenuSelectionDialog(document.getElementById('menu-dialog') as HTMLDialogElement);
+
+  for (let operator_number = 1; operator_number != 5; ++operator_number) {
+    globalVariables.operators[`${operator_number}` as '1'] = initOperator(operator_number);
+  }
+
+
   const keyboardGrabButton = document.getElementById('grab-keyboard-button');
   const high_pass_knob = document.getElementById("high-pass-knob");
-  const attack_knob_op1 = document.getElementById("attack-knob-op1");
   const low_pass_knob = document.getElementById("low-pass-knob");
   const syncButton = document.getElementById(
     "light-up-button-lfo1"
@@ -128,8 +194,6 @@ window.onload = () => {
     "main-volume"
   ) as HTMLInputElement;
 
-  const MIN_ANGLE = 40; // Min rotation (Bottom-left)
-  const MAX_ANGLE = 320; // Max rotation (Bottom-right)
   let on_off = false;
 
   if (syncButton) {
@@ -141,23 +205,19 @@ window.onload = () => {
   }
 
   if (high_pass_knob)
-    attachKnobListener(high_pass_knob, MIN_ANGLE, MAX_ANGLE, (value) => {
-      console.log("Knob-Value", value);
+    attachKnobListener(high_pass_knob, (value) => {
+      // console.log("Knob-Value", value);
     });
 
   if (low_pass_knob)
-    attachKnobListener(low_pass_knob, MIN_ANGLE, MAX_ANGLE, (value) => {
-      console.log("Knob-Value", value);
+    attachKnobListener(low_pass_knob, (value) => {
+      // console.log("Knob-Value", value);
     });
 
-  if (attack_knob_op1)
-    attachKnobListener(attack_knob_op1, MIN_ANGLE, MAX_ANGLE, (value) => {
-      console.log("Knob-Value", value);
-    });
 
   if (main_volume)
     attachSliderListener(main_volume, (normalizeValue) => {
-      console.log("nromalizedvalue", normalizeValue);
+      // console.log("nromalizedvalue", normalizeValue);
     });
 
   keyboardGrabButton?.addEventListener('click', () => {
