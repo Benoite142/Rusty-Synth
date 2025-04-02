@@ -3,7 +3,7 @@
 
 #include "../sound_player/sound_player.hpp"
 #include "../utils/note_map.hpp"
-#include "oscillator/oscillator.hpp"
+#include "operator/operator.hpp"
 #include <alsa/asoundlib.h>
 #include <functional>
 #include <mutex>
@@ -11,8 +11,8 @@
 
 class Synth {
 private:
-  std::vector<Oscillator> *osc;
   SoundPlayer *async_player;
+  Operator synth_operator;
   std::function<size_t(std::vector<std::string> *)> selectDeviceCallback;
 
 public:

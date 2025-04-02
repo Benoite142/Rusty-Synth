@@ -1,6 +1,7 @@
 #ifndef SYNTH_UTILS
 #define SYNTH_UTILS
 
+#include "../synthetiser/operator/operator.hpp"
 #include "../synthetiser/oscillator/oscillator.hpp"
 #include "note_map.hpp"
 #include <alsa/asoundlib.h>
@@ -13,7 +14,7 @@ void writeDataToBuffer(std::vector<short> *buffer, Oscillator *osc,
 
 struct private_data {
   float *buffer;
-  std::vector<Oscillator> *osc;
+  Operator *synth_operator;
   NoteMap *note_map;
   std::mutex *map_mutex;
 };

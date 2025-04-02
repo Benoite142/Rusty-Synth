@@ -34,25 +34,20 @@ void async_player_callback(snd_async_handler_t *ahandler) {
         if (!note.released) {
           auto freq = calculate_frequency(note.note_value);
 
-          (*data->osc)[i].setFrequency(freq);
-          (*data->osc)[i].noteOn();
+          data->synth_operator->updateFrequency(i, freq);
         } else {
-          (*data->osc)[i].noteOff();
+          data->synth_operator->release(i);
         }
       }
     }
     data->map_mutex->unlock();
 
     for (int i = 0; i < BUFFER_SIZE; ++i) {
-      buffer[i] = 0;
-      for (size_t j = 0; j < data->note_map->notes.size(); ++j) {
-        buffer[i] += (*data->osc)[j].advance();
-      }
+      buffer[i] = data->synth_operator->advance();
       // so the notes dont clip with themeselves
       // might need to find a better way to do this
-      if (!data->note_map->notes.empty()) {
-        buffer[i] /= data->note_map->notes.size();
-      }
+
+      buffer[i] /= data->synth_operator->getNumberOfVoices();
     }
     error = snd_pcm_writei(handle, buffer, BUFFER_SIZE);
 
