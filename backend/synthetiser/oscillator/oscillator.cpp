@@ -4,11 +4,10 @@
 
 Oscillator::Oscillator(float freq, Waveform wave, EnvelopeADSR *env,
                        float peakAmplitude)
-    : frequency{freq}, waveform(wave) {
+    : frequency{freq}, waveform(wave), peakAmplitude(peakAmplitude) {
   offset_sine_square = 2 * PI * (freq / SAMPLE_RATE);
   offset_triangle_saw = freq / SAMPLE_RATE;
   envelope = env;
-  peakAmplitude = peakAmplitude;
 }
 
 void Oscillator::setWaveform(Waveform newWaveform) { waveform = newWaveform; }

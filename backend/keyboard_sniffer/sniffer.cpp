@@ -63,9 +63,7 @@ int KeyboardSniffer::sniff(NoteMap *note_map, std::mutex *note_map_lock) {
   while (true) {
     XLockDisplay(display);
 
-    std::cout << "before event\n";
     error = XNextEvent(display, &event);
-    std::cout << "after event\n";
 
     if (error < 0) {
       std::cout << "error reading xevent\n";
