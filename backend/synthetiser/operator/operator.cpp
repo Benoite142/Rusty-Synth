@@ -41,8 +41,6 @@ void Operator::updateFrequency(size_t index, double note) {
 
 float Operator::advance() {
   float sum = 0;
-  //   std::for_each(oscs.begin(), oscs.end(),
-  // [&sum](Oscillator o) { sum += o.advance(); });
   for (auto it = oscs.begin(); it != oscs.end(); ++it) {
     sum += it->advance();
   }
