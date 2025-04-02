@@ -1,7 +1,5 @@
 #include "operator.hpp"
-#include <algorithm>
 #include <cstddef>
-#include <iostream>
 #include <vector>
 
 Operator::Operator(size_t numberOfVoices, float amplitude,
@@ -15,7 +13,7 @@ void Operator::set_number_of_voices(size_t newNumOfVoices) {
   if (oscs.size() != newNumOfVoices) {
     numberOfVoices = newNumOfVoices;
     oscs.clear();
-    Oscillator osc{0.0f, waveform};
+    Oscillator osc{0.0f, waveform, &envelope, amplitude};
     for (int i = 0; i < numberOfVoices; ++i) {
       oscs.push_back(osc);
     }
