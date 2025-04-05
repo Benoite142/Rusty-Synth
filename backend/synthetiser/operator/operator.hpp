@@ -1,5 +1,6 @@
 #ifndef OPERATOR_HPP
 #define OPERATOR_HPP
+#include "../low_frequency_oscillator/low_frequency_oscillator.hpp"
 #include "../oscillator/oscillator.hpp"
 #include <cstddef>
 #include <vector>
@@ -11,6 +12,7 @@ private:
   float amplitude;
   EnvelopeADSR envelope;
   Waveform waveform;
+  LowFrequencyOscillator *lfo_1;
 
 public:
   Operator(size_t numberOfVoices, float amplitude, EnvelopeADSR envelope,

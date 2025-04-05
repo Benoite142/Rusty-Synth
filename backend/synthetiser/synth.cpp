@@ -8,7 +8,7 @@
 
 Synth::Synth(
     std::function<size_t(std::vector<std::string> *)> selectDeviceCallback)
-    : synth_operator{2, 0.5f, EnvelopeADSR{}, Waveform::SQUARE} {
+    : synth_operator{2, 0.5f, EnvelopeADSR{}, Waveform::SAW} {
   this->selectDeviceCallback = selectDeviceCallback;
 }
 

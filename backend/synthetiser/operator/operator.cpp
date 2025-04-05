@@ -8,6 +8,7 @@ Operator::Operator(size_t numberOfVoices, float amplitude,
     : numberOfVoices(numberOfVoices), amplitude(amplitude), envelope(envelope),
       waveform(waveform) {
   set_number_of_voices(numberOfVoices);
+  lfo_1 = new LowFrequencyOscillator(5, Waveform::SINE, 0.3);
 }
 
 void Operator::set_number_of_voices(size_t newNumOfVoices) {
@@ -45,7 +46,7 @@ float Operator::advance() {
   for (auto it = oscs.begin(); it != oscs.end(); ++it) {
     sum += it->advance();
   }
-  return sum;
+  return lfo_1->advance() * sum;
 }
 
 void Operator::releaseNote(size_t index) { oscs[index].noteOff(); }
