@@ -9,423 +9,639 @@
 
 <body>
 	<dialog id="menu-dialog"></dialog>
-	<div class="container">
-		<div class="sidebar">
-			<div class="main-master">MAIN</div>
-			<button id="grab-keyboard-button">Grab Keyboard Input</button>
-			<div class="mono">
-				<div class="sync">
-					<span class="light-up-button-text">
-						MONO
+	<div id="body-container" class="container">
+		<div class="top-main">
+			<div class="sidebar">
+				<div>
+					<div id="plight">P light</div>
+					<div id="pmedium">P medium</div>
+					<div id="pdark">P dark</div>
+					<div id="red">R</div>
+					<div id="yellow">Y</div>
+					<div id="blue">B</div>
+				</div>
+				<div class="main-master">MAIN</div>
+				<div class="voices">
+					<span class="voice-title">
+						VOICES
 					</span>
-					<button class="light-up-button" id="link-lfo1">
-
-						<span class="light-up"></span>
-					</button>
-				</div>
-			</div>
-			<div class="high-pass-filter">
-				<div class="main-filter-text">_high-pass filter_</div>
-				<div class="knob-slider" id="asdf">
-					<div class="knob" id="high-pass-knob"></div>
-
-				</div>
-			</div>
-			<div class="low-pass-filter">
-				<div class="main-filter-text">_low-pass filter_</div>
-				<div class="knob-slider">
-					<div class="knob" id="low-pass-knob"></div>
-				</div>
-				<!-- <div class="knob-ring"></div> -->
-			</div>
-
-			<div class="master-volume">
-				<label for="main-volume" class="volume-text">_volume_</label>
-				<input type="range" id="main-volume" min="0" max="100" value="50" orient="vertical"
-					class="vertical-slider">
-			</div>
-
-		</div>
-		<div class="main-panel">
-			<div class="op">
-
-				<div class="op-left">
-					<div class="box-title">
-						OP1
-					</div>
-					<div class="op-volume">
-						<label for="op1-volume" class="volume-text">_level_</label>
-						<input type="range" id="op1-volume" min="0" max="100" value="50"
-							orient="vertical" class="vertical-slider" id="volume-level-op1">
-					</div>
-				</div>
-
-				<div class="waveform">
-					<div class="shape">
-						<span>SHAPE</span>
-						<div class="shape-selector">
-							Wave-placeholder
-						</div>
-					</div>
-					<div class="grid-shape">grid</div>
-					<div class="pitch">
-						<span class="adsr-knob-title">PITCH</span>
-						<div class="pitch-grid">
-							<div class="pitch-params">
-								<span class="adsr-knob-title">COARSE</span>
-								<div class="knob-slider-params">
-									<div class="knob-params"
-										id="pitch-coarse-knob-op1"></div>
-								</div>
-							</div>
-							<div class="pitch-params">
-								<span class="adsr-knob-title">FINE</span>
-								<div class="knob-slider-params">
-									<div class="knob-params"
-										id="pitch-fine-knob-op1"></div>
-								</div>
-							</div>
-
+					<div class="voice-range">
+						<input type="range" min="1" max="10" steps="1" value="1" id="voice-range-op1"
+							class="voice-slider">
+						<div class="voice-range-labels">
+							<span>1</span>
+							<span>5</span>
+							<span>10</span>
 						</div>
 					</div>
 				</div>
-
-				<div class="envelope-adsr">
-					<span class="envelope-title">ADSR ENVELOPE</span>
-					<div class="grid-adsr"></div>
-					<div class="adsr">
-						<div class="adsr-knob">
-							<span class="adsr-knob-title">ATT</span>
-							<div class="knob-slider-params">
-								<div class="knob-params" id="attack-knob-op1"></div>
-							</div>
-						</div>
-						<div class="adsr-knob">
-							<span class="adsr-knob-title">DEC</span>
-							<div class="knob-slider-params">
-								<div class="knob-params" id="decay-knob-op1"></div>
-							</div>
-						</div>
-						<div class="adsr-knob">
-							<span class="adsr-knob-title">SUS</span>
-							<div class="knob-slider-params">
-								<div class="knob-params" id="sustain-knob-op1"></div>
-							</div>
-						</div>
-						<div class="adsr-knob">
-							<span class="adsr-knob-title">REL</span>
-							<div class="knob-slider-params">
-								<div class="knob-params" id="release-knob-op1"></div>
-							</div>
-						</div>
-					</div>
-				</div>
-				<div class="keyboard-control">
-					<p>keyboard control</p>
-					<div class="keyboard-control-knobs">
-						<div class="adsr-knob">
-							<span class="adsr-knob-title">LVL</span>
-							<div class="knob-slider-params">
-								<div class="knob-params" id="level-control-knob-op1">
-								</div>
-							</div>
-						</div>
-						<div class="adsr-knob">
-							<span class="adsr-knob-title">DEC</span>
-							<div class="knob-slider-params">
-								<div class="knob-params" id="decay-constrol-knob-op1">
-								</div>
-							</div>
-						</div>
-						<div class="adsr-knob">
-							<span class="adsr-knob-title">VEL</span>
-							<div class="knob-slider-params">
-								<div class="knob-params" id="velocity-control-knob-op1">
-								</div>
-							</div>
-						</div>
-						<div class="adsr-knob">
-							<span class="adsr-knob-title">ATT</span>
-							<div class="knob-slider-params">
-								<div class="knob-params" id="attack-control-knob-op1">
-								</div>
-							</div>
-						</div>
-					</div>
-					<div class="voices">
-						<span class="voice-title">
-							VOICES
-						</span>
-						<div class="voice-range">
-							<input type="range" min="1" max="10" steps="1" value="1"
-								id="voice-range-op1" class="voice-slider">
-							<div class="voice-range-labels">
-								<span>1</span>
-								<span>5</span>
-								<span>10</span>
-							</div>
-						</div>
-					</div>
-					<div class="voices-link">
-						<p>Link</p>
-						<div class="link-lfo">
-							<div class="sync">
-								LFO1
-								<button class="light-up-button" id="link-lfo1">
-									<span class="light-up"></span>
-								</button>
-							</div>
-							<div class="sync">
-								LFO2
-								<button class="light-up-button" id="link-lfo2">
-
-									<span class="light-up"></span>
-								</button>
-							</div>
-						</div>
-
-					</div>
-
-				</div>
-
-			</div>
-			<div class="lfo">
-				<div class="lfo-left">
-					<div class="box-title">
-						LF01
-					</div>
+				<button id="grab-keyboard-button">Grab Keyboard Input</button>
+				<div class="mono">
 					<div class="sync">
-						Sync
-						<button class="light-up-button" id="light-up-button-lfo1">
-
+						<span class="light-up-button-text">
+							MONO
+						</span>
+						<button class="light-up-button" id="link-lfo1">
 							<span class="light-up"></span>
 						</button>
 					</div>
-					<div class="rate">
-						<div class="adsr-knob">
-							<span class="adsr-knob-title">RATE</span>
-							<div class="knob-slider-params">
-								<div class="knob-params" id="rate-knob-op1"></div>
+				</div>
+				<div class="high-pass-filter">
+					<div class="main-filter-text">_high-pass filter_</div>
+					<div class="knob-slider" id="asdf">
+						<div class="knob" id="high-pass-knob"></div>
+					</div>
+				</div>
+				<div class="low-pass-filter">
+					<div class="main-filter-text">_low-pass filter_</div>
+					<div class="knob-slider">
+						<div class="knob" id="low-pass-knob"></div>
+					</div>
+				</div>
+
+				<div class="master-volume">
+					<label for="main-volume" class="volume-text">_volume_</label>
+					<input type="range" id="main-volume" min="0" max="100" value="50" orient="vertical"
+						class="vertical-slider">
+				</div>
+			</div>
+			<div class="main-panel">
+				<div class="operators-container">
+					<div class="op">
+						<div class="op-left">
+							<div class="box-title">
+								OP1
+							</div>
+							<div class="op-volume">
+								<label for="volume-level-1" class="volume-text">_level_</label>
+								<input type="range" min="0" max="100" value="50" orient="vertical"
+									class="vertical-slider" id="volume-level-1">
+							</div>
+						</div>
+						<div class="waveform">
+							<div class="shape">
+								<span>SHAPE</span>
+								<div>
+									<button id="left-wave-selector-1">&larr;</button>
+									<span id="wave-type-1">Sine Wave</span>
+									<button id="right-wave-selector-1">&rarr;</button>
+								</div>
+							</div>
+							<div class="pitch">
+								<span class="adsr-knob-title">PITCH</span>
+								<div class="pitch-grid">
+									<div class="pitch-params">
+										<span class="adsr-knob-title">COARSE</span>
+										<div class="knob-slider-params">
+											<div class="knob-params" id="pitch-coarse-knob-op1"></div>
+										</div>
+									</div>
+									<div class="pitch-params">
+										<span class="adsr-knob-title">FINE</span>
+										<div class="knob-slider-params">
+											<div class="knob-params" id="pitch-fine-knob-op1"></div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="envelope-adsr">
+							<span class="envelope-title">ADSR ENVELOPE</span>
+							<div class="adsr">
+								<div class="adsr-knob">
+									<span class="adsr-knob-title">ATT</span>
+									<div class="knob-slider-params">
+										<div class="knob-params" id="attack-knob-1"></div>
+									</div>
+								</div>
+								<div class="adsr-knob">
+									<span class="adsr-knob-title">DEC</span>
+									<div class="knob-slider-params">
+										<div class="knob-params" id="decay-knob-1"></div>
+									</div>
+								</div>
+								<div class="adsr-knob">
+									<span class="adsr-knob-title">SUS</span>
+									<div class="knob-slider-params">
+										<div class="knob-params" id="sustain-knob-1"></div>
+									</div>
+								</div>
+								<div class="adsr-knob">
+									<span class="adsr-knob-title">REL</span>
+									<div class="knob-slider-params">
+										<div class="knob-params" id="release-knob-1"></div>
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="keyboard-control">
+							<p>keyboard control</p>
+							<div class="keyboard-control-knobs">
+								<div class="adsr-knob">
+									<span class="adsr-knob-title">LVL</span>
+									<div class="knob-slider-params">
+										<div class="knob-params" id="level-control-knob-op1">
+										</div>
+									</div>
+								</div>
+								<div class="adsr-knob">
+									<span class="adsr-knob-title">DEC</span>
+									<div class="knob-slider-params">
+										<div class="knob-params" id="decay-control-knob-op1">
+										</div>
+									</div>
+								</div>
+								<div class="adsr-knob">
+									<span class="adsr-knob-title">VEL</span>
+									<div class="knob-slider-params">
+										<div class="knob-params" id="velocity-control-knob-op1">
+										</div>
+									</div>
+								</div>
+								<div class="adsr-knob">
+									<span class="adsr-knob-title">ATT</span>
+									<div class="knob-slider-params">
+										<div class="knob-params" id="attack-control-knob-op1">
+										</div>
+									</div>
+								</div>
+							</div>
+							<div class="voices-link">
+								<p>Link</p>
+								<div class="link-lfo">
+									<div class="sync">
+										LFO1
+										<button class="light-up-button" id="link-lfo1">
+											<span class="light-up"></span>
+										</button>
+									</div>
+									<div class="sync">
+										LFO2
+										<button class="light-up-button" id="link-lfo2">
+											<span class="light-up"></span>
+										</button>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="op">
+						<div class="op-left">
+							<div class="box-title">
+								OP2
+							</div>
+							<div class="op-volume">
+								<label for="volume-level-2" class="volume-text">_level_</label>
+								<input type="range" min="0" max="100" value="50" orient="vertical"
+									class="vertical-slider" id="volume-level-2">
+							</div>
+						</div>
+						<div class="waveform">
+							<div class="shape">
+								<span>SHAPE</span>
+								<div>
+									<button id="left-wave-selector-2">&larr;</button>
+									<span id="wave-type-2">Sine Wave</span>
+									<button id="right-wave-selector-2">&rarr;</button>
+								</div>
+							</div>
+							<div class="pitch">
+								<span class="adsr-knob-title">PITCH</span>
+								<div class="pitch-grid">
+									<div class="pitch-params">
+										<span class="adsr-knob-title">COARSE</span>
+										<div class="knob-slider-params">
+											<div class="knob-params" id="pitch-coarse-knob-2"></div>
+										</div>
+									</div>
+									<div class="pitch-params">
+										<span class="adsr-knob-title">FINE</span>
+										<div class="knob-slider-params">
+											<div class="knob-params" id="pitch-fine-knob-2">
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="envelope-adsr">
+							<span class="envelope-title">ADSR ENVELOPE</span>
+							<div class="adsr">
+								<div class="adsr-knob">
+									<span class="adsr-knob-title">ATT</span>
+									<div class="knob-slider-params">
+										<div class="knob-params" id="attack-knob-2"></div>
+									</div>
+								</div>
+								<div class="adsr-knob">
+									<span class="adsr-knob-title">DEC</span>
+									<div class="knob-slider-params">
+										<div class="knob-params" id="decay-knob-2"></div>
+									</div>
+								</div>
+								<div class="adsr-knob">
+									<span class="adsr-knob-title">SUS</span>
+									<div class="knob-slider-params">
+										<div class="knob-params" id="sustain-knob-2"></div>
+									</div>
+								</div>
+								<div class="adsr-knob">
+									<span class="adsr-knob-title">REL</span>
+									<div class="knob-slider-params">
+										<div class="knob-params" id="release-knob-2"></div>
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="keyboard-control">
+							<p>keyboard control</p>
+							<div class="keyboard-control-knobs">
+								<div class="adsr-knob">
+									<span class="adsr-knob-title">LVL</span>
+									<div class="knob-slider-params">
+										<div class="knob-params" id="level-control-knob-2">
+										</div>
+									</div>
+								</div>
+								<div class="adsr-knob">
+									<span class="adsr-knob-title">DEC</span>
+									<div class="knob-slider-params">
+										<div class="knob-params" id="decay-control-knob-2">
+										</div>
+									</div>
+								</div>
+								<div class="adsr-knob">
+									<span class="adsr-knob-title">VEL</span>
+									<div class="knob-slider-params">
+										<div class="knob-params" id="velocity-control-knob-2">
+										</div>
+									</div>
+								</div>
+								<div class="adsr-knob">
+									<span class="adsr-knob-title">ATT</span>
+									<div class="knob-slider-params">
+										<div class="knob-params" id="attack-control-knob-2">
+										</div>
+									</div>
+								</div>
+							</div>
+							<div class="voices-link">
+								<p>Link</p>
+								<div class="link-lfo">
+									<div class="sync">
+										LFO1
+										<button class="light-up-button" id="link-lfo1">
+											<span class="light-up"></span>
+										</button>
+									</div>
+									<div class="sync">
+										LFO2
+										<button class="light-up-button" id="link-lfo2">
+											<span class="light-up"></span>
+										</button>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="op">
+						<div class="op-left">
+							<div class="box-title">
+								OP3
+							</div>
+							<div class="op-volume">
+								<label for="volume-level-3" class="volume-text">_level_</label>
+								<input type="range" min="0" max="100" value="50" orient="vertical"
+									class="vertical-slider" id="volume-level-3">
+							</div>
+						</div>
+						<div class="waveform">
+							<div class="shape">
+								<span>SHAPE</span>
+								<div>
+									<button id="left-wave-selector-3">&larr;</button>
+									<span id="wave-type-3">Sine Wave</span>
+									<button id="right-wave-selector-3">&rarr;</button>
+								</div>
+							</div>
+							<div class="pitch">
+								<span class="adsr-knob-title">PITCH</span>
+								<div class="pitch-grid">
+									<div class="pitch-params">
+										<span class="adsr-knob-title">COARSE</span>
+										<div class="knob-slider-params">
+											<div class="knob-params" id="pitch-coarse-knob-3"></div>
+										</div>
+									</div>
+									<div class="pitch-params">
+										<span class="adsr-knob-title">FINE</span>
+										<div class="knob-slider-params">
+											<div class="knob-params" id="pitch-fine-knob-3">
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="envelope-adsr">
+							<span class="envelope-title">ADSR ENVELOPE</span>
+							<div class="adsr">
+								<div class="adsr-knob">
+									<span class="adsr-knob-title">ATT</span>
+									<div class="knob-slider-params">
+										<div class="knob-params" id="attack-knob-3"></div>
+									</div>
+								</div>
+								<div class="adsr-knob">
+									<span class="adsr-knob-title">DEC</span>
+									<div class="knob-slider-params">
+										<div class="knob-params" id="decay-knob-3"></div>
+									</div>
+								</div>
+								<div class="adsr-knob">
+									<span class="adsr-knob-title">SUS</span>
+									<div class="knob-slider-params">
+										<div class="knob-params" id="sustain-knob-3"></div>
+									</div>
+								</div>
+								<div class="adsr-knob">
+									<span class="adsr-knob-title">REL</span>
+									<div class="knob-slider-params">
+										<div class="knob-params" id="release-knob-3"></div>
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="keyboard-control">
+							<p>keyboard control</p>
+							<div class="keyboard-control-knobs">
+								<div class="adsr-knob">
+									<span class="adsr-knob-title">LVL</span>
+									<div class="knob-slider-params">
+										<div class="knob-params" id="level-control-knob-3">
+										</div>
+									</div>
+								</div>
+								<div class="adsr-knob">
+									<span class="adsr-knob-title">DEC</span>
+									<div class="knob-slider-params">
+										<div class="knob-params" id="decay-control-knob-3">
+										</div>
+									</div>
+								</div>
+								<div class="adsr-knob">
+									<span class="adsr-knob-title">VEL</span>
+									<div class="knob-slider-params">
+										<div class="knob-params" id="velocity-control-knob-3">
+										</div>
+									</div>
+								</div>
+								<div class="adsr-knob">
+									<span class="adsr-knob-title">ATT</span>
+									<div class="knob-slider-params">
+										<div class="knob-params" id="attack-control-knob-3">
+										</div>
+									</div>
+								</div>
+							</div>
+							<div class="voices-link">
+								<p>Link</p>
+								<div class="link-lfo">
+									<div class="sync">
+										LFO1
+										<button class="light-up-button" id="link-lfo1">
+											<span class="light-up"></span>
+										</button>
+									</div>
+									<div class="sync">
+										LFO2
+										<button class="light-up-button" id="link-lfo2">
+											<span class="light-up"></span>
+										</button>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="op">
+						<div class="op-left">
+							<div class="box-title">
+								OP4
+							</div>
+							<div class="op-volume">
+								<label for="volume-level-4" class="volume-text">_level_</label>
+								<input type="range" min="0" max="100" value="50" orient="vertical"
+									class="vertical-slider" id="volume-level-4">
+							</div>
+						</div>
+						<div class="waveform">
+							<div class="shape">
+								<span>SHAPE</span>
+								<div>
+									<button id="left-wave-selector-4">&larr;</button>
+									<span id="wave-type-4">Sine Wave</span>
+									<button id="right-wave-selector-4">&rarr;</button>
+								</div>
+							</div>
+							<div class="pitch">
+								<span class="adsr-knob-title">PITCH</span>
+								<div class="pitch-grid">
+									<div class="pitch-params">
+										<span class="adsr-knob-title">COARSE</span>
+										<div class="knob-slider-params">
+											<div class="knob-params" id="pitch-coarse-knob-4"></div>
+										</div>
+									</div>
+									<div class="pitch-params">
+										<span class="adsr-knob-title">FINE</span>
+										<div class="knob-slider-params">
+											<div class="knob-params" id="pitch-fine-knob-4">
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="envelope-adsr">
+							<span class="envelope-title">ADSR ENVELOPE</span>
+							<div class="adsr">
+								<div class="adsr-knob">
+									<span class="adsr-knob-title">ATT</span>
+									<div class="knob-slider-params">
+										<div class="knob-params" id="attack-knob-4"></div>
+									</div>
+								</div>
+								<div class="adsr-knob">
+									<span class="adsr-knob-title">DEC</span>
+									<div class="knob-slider-params">
+										<div class="knob-params" id="decay-knob-4"></div>
+									</div>
+								</div>
+								<div class="adsr-knob">
+									<span class="adsr-knob-title">SUS</span>
+									<div class="knob-slider-params">
+										<div class="knob-params" id="sustain-knob-4"></div>
+									</div>
+								</div>
+								<div class="adsr-knob">
+									<span class="adsr-knob-title">REL</span>
+									<div class="knob-slider-params">
+										<div class="knob-params" id="release-knob-4"></div>
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="keyboard-control">
+							<p>keyboard control</p>
+							<div class="keyboard-control-knobs">
+								<div class="adsr-knob">
+									<span class="adsr-knob-title">LVL</span>
+									<div class="knob-slider-params">
+										<div class="knob-params" id="level-control-knob-4">
+										</div>
+									</div>
+								</div>
+								<div class="adsr-knob">
+									<span class="adsr-knob-title">DEC</span>
+									<div class="knob-slider-params">
+										<div class="knob-params" id="decay-control-knob-4">
+										</div>
+									</div>
+								</div>
+								<div class="adsr-knob">
+									<span class="adsr-knob-title">VEL</span>
+									<div class="knob-slider-params">
+										<div class="knob-params" id="velocity-control-knob-4">
+										</div>
+									</div>
+								</div>
+								<div class="adsr-knob">
+									<span class="adsr-knob-title">ATT</span>
+									<div class="knob-slider-params">
+										<div class="knob-params" id="attack-control-knob-4">
+										</div>
+									</div>
+								</div>
+							</div>
+							<div class="voices-link">
+								<p>Link</p>
+								<div class="link-lfo">
+									<div class="sync">
+										LFO1
+										<button class="light-up-button" id="link-lfo1">
+											<span class="light-up"></span>
+										</button>
+									</div>
+									<div class="sync">
+										LFO2
+										<button class="light-up-button" id="link-lfo2">
+											<span class="light-up"></span>
+										</button>
+									</div>
+								</div>
 							</div>
 						</div>
 					</div>
 				</div>
-				<div class="waveform">
-					<div class="shape">
-						<span>Shape</span>
-						<div class="shape-selector">
-							Wave-placeholder
-						</div>
-					</div>
-					<div class="grid-shape">grid</div>
-					<div class="amount">
-						<div class="adsr-knob">
-							<span class="adsr-knob-title">AMOUNT</span>
-							<div class="knob-slider-params">
-								<div class="knob-params" id="amount-knob-op1"></div>
+				<div class="lfo-container">
+					<div class="lfo">
+						<div class="lfo-left">
+							<div class="box-title">
+								LF01
+							</div>
+							<div class="sync">
+								Sync
+								<button class="light-up-button" id="light-up-button-lfo1">
+
+									<span class="light-up"></span>
+								</button>
+							</div>
+							<div class="rate">
+								<div class="adsr-knob">
+									<span class="adsr-knob-title">RATE</span>
+									<div class="knob-slider-params">
+										<div class="knob-params" id="rate-knob-op1"></div>
+									</div>
+								</div>
 							</div>
 						</div>
-					</div>
-				</div>
-				<label class="on-off">
-					<input type="checkbox" id="on-off-lfo1" checked>
-					<span class="slider-on-off"></span>
-				</label>
-			</div>
-			<div class="lfo">
-				<div class="lfo-left">
-					<div class="box-title">
-						LF02
-					</div>
-					<div class="sync">
-						sync
-					</div>
-					<div class="rate">
-						rate
-					</div>
-				</div>
-				<div class="waveform">
-					<div class="shape">shape
-						<div class="shape-selector">
-							Wave
+						<div class="waveform">
+							<div class="shape">
+								<span>Shape</span>
+								<div class="shape-selector">
+									Wave-placeholder
+								</div>
+							</div>
+							<div class="amount">
+								<div class="adsr-knob">
+									<span class="adsr-knob-title">AMOUNT</span>
+									<div class="knob-slider-params">
+										<div class="knob-params" id="amount-knob-op1"></div>
+									</div>
+								</div>
+							</div>
 						</div>
+						<label class="on-off">
+							<input type="checkbox" id="on-off-lfo1" checked>
+							<span class="slider-on-off"></span>
+						</label>
 					</div>
-					<div class="grid-shape">grid</div>
-					<div class="amount">amount</div>
-				</div>
-				<label class="on-off">
-					<input type="checkbox" checked>
-					<span class="slider-on-off"></span>
-				</label>
-			</div>
-			<div class="op">
-				<div class="op-left">
-					<div class="box-title">
-						OP2
+					<div class="lfo">
+						<div class="lfo-left">
+							<div class="box-title">
+								LF02
+							</div>
+							<div class="sync">
+								sync
+							</div>
+							<div class="rate">
+								rate
+							</div>
+						</div>
+						<div class="waveform">
+							<div class="shape">shape
+								<div class="shape-selector">
+									Wave
+								</div>
+							</div>
+							<div class="amount">amount</div>
+						</div>
+						<label class="on-off">
+							<input type="checkbox" checked>
+							<span class="slider-on-off"></span>
+						</label>
 					</div>
-					<div class="op-volume">
-						<label for="op1-volume" class="volume-text">_level_</label>
-						<input type="range" id="op1-volume" min="0" max="100" value="50"
-							orient="vertical" class="vertical-slider">
-					</div>
-				</div>
-
-				<div class="waveform">
-					<div class="shape">shape</div>
-					<div class="grid-shape">grid</div>
-					<div class="pitch">pitch</div>
-				</div>
-
-				<div class="envelope-adsr">
-					<div class="grid-adsr">grid</div>
-					<div class="adsr">
-						<div class="adsr-knob">ATT</div>
-						<div class="adsr-knob">DEC</div>
-						<div class="adsr-knob">SUS</div>
-						<div class="adsr-knob">REL</div>
-					</div>
-				</div>
-				<div class="keyboard-control">
-					<p>keyboard control</p>
-					<div class="keyboard-control-knobs">
-						<div class="keyboard-control-knob">Level</div>
-						<div class="keyboard-control-knob">Decay</div>
-						<div class="keyboard-control-knob">Vel</div>
-						<div class="keyboard-control-knob">Att</div>
-					</div>
-					<div class="voices-link">
-						<p>Vocies</p>
-						<p>Link</p>
-					</div>
-
-				</div>
-			</div>
-			<div class="op">
-				<div class="op-left">
-					<div class="box-title">
-						OP3
-					</div>
-					<div class="op-volume">
-						<label for="op1-volume" class="volume-text">_level_</label>
-						<input type="range" id="op1-volume" min="0" max="100" value="50"
-							orient="vertical" class="vertical-slider">
-					</div>
-				</div>
-
-				<div class="waveform">
-					<div class="shape">shape</div>
-					<div class="grid-shape">grid</div>
-					<div class="pitch">pitch</div>
-				</div>
-
-				<div class="envelope-adsr">
-					<div class="grid-adsr">grid</div>
-					<div class="adsr">
-						<div class="adsr-knob">ATT</div>
-						<div class="adsr-knob">DEC</div>
-						<div class="adsr-knob">SUS</div>
-						<div class="adsr-knob">REL</div>
-					</div>
-				</div>
-				<div class="keyboard-control">
-					<p>keyboard control</p>
-					<div class="keyboard-control-knobs">
-						<div class="keyboard-control-knob">Level</div>
-						<div class="keyboard-control-knob">Decay</div>
-						<div class="keyboard-control-knob">Vel</div>
-						<div class="keyboard-control-knob">Att</div>
-					</div>
-					<div class="voices-link">
-						<p>Vocies</p>
-						<p>Link</p>
-					</div>
-
-				</div>
-			</div>
-			<div class="algorithm">ALGORITHM</div>
-			<div class="op">
-				<div class="op-left">
-					<div class="box-title">
-						OP4
-					</div>
-					<div class="op-volume">
-						<label for="op1-volume" class="volume-text">_level_</label>
-						<input type="range" id="op1-volume" min="0" max="100" value="50"
-							orient="vertical" class="vertical-slider">
-					</div>
-				</div>
-
-				<div class="waveform">
-					<div class="shape">shape</div>
-					<div class="grid-shape">grid</div>
-					<div class="pitch">pitch</div>
-				</div>
-
-				<div class="envelope-adsr">
-					<div class="grid-adsr">grid</div>
-					<div class="adsr">
-						<div class="adsr-knob">ATT</div>
-						<div class="adsr-knob">DEC</div>
-						<div class="adsr-knob">SUS</div>
-						<div class="adsr-knob">REL</div>
-					</div>
-				</div>
-				<div class="keyboard-control">
-					<p>keyboard control</p>
-					<div class="keyboard-control-knobs">
-						<div class="keyboard-control-knob">Level</div>
-						<div class="keyboard-control-knob">Decay</div>
-						<div class="keyboard-control-knob">Vel</div>
-						<div class="keyboard-control-knob">Att</div>
-					</div>
-					<div class="voices-link">
-						<p>Vocies</p>
-						<p>Link</p>
-					</div>
-
 				</div>
 			</div>
 		</div>
-		<div class="right-panel"></div>
-		<div class="keyboard-container">
-			<div class="pitch-mod">PITCH AND MOD</div>
-			<div class="keyboard"> KEYBOARD</div>
-			<div class="mod-link">
-				<span class="mod-wheel-link">MOD WHEEL</span>
-				<div class="lfo-speed">
-					LFO1 SPEED
-					<button class="light-up-button" id="link-lfo1">
-						<span class="light-up"></span>
-					</button>
-				</div>
-				<div class="lfo-speed">
-					LFO2 SPEED
-					<button class="light-up-button" id="link-lfo1">
-						<span class="light-up"></span>
-					</button>
-				</div>
-				<div class="fm">
-					FM
-					<button class="light-up-button" id="link-lfo1">
-						<span class="light-up"></span>
-					</button>
+		<div class="bottom-main">
+			<div class="keyboard-container">
+				<div class="pitch-mod">PITCH AND MOD</div>
+				<div class="keyboard"> KEYBOARD</div>
+				<div class="mod-link">
+					<span class="mod-wheel-link">MOD WHEEL</span>
+					<div class="lfo-speed">
+						LFO1 SPEED
+						<button class="light-up-button" id="link-lfo1">
+							<span class="light-up"></span>
+						</button>
+					</div>
+					<div class="lfo-speed">
+						LFO2 SPEED
+						<button class="light-up-button" id="link-lfo1">
+							<span class="light-up"></span>
+						</button>
+					</div>
+					<div class="fm">
+						FM
+						<button class="light-up-button" id="link-lfo1">
+							<span class="light-up"></span>
+						</button>
+					</div>
 				</div>
 			</div>
 		</div>
-		<!-- <button id="action-button">Click to send something to the main process</button> -->
-
 	</div>
-
-
 </body>
 
 </html>
-
-
-<!-- <div>
-					<p>
-						The value returned from the main process will display below:
-					</p>
-					<span id="value-from-main"></span>
-					<span id="counter">0</span>
-				</div> -->
