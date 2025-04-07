@@ -1,5 +1,6 @@
 const MIN_ANGLE = 40; // Min rotation (Bottom-left)
 const MAX_ANGLE = 320; // Max rotation (Bottom-right)
+const WAVE_FORMS = [{ value: 'sine', text: 'Sine Wave' }, { value: 'square', text: 'Square Wave' }, { value: 'saw', text: 'Saw Wave' }, { value: 'triangle', text: 'Triangle Wave' }];
 
 class MenuSelectionDialog {
   private dialog: HTMLDialogElement;
@@ -39,7 +40,11 @@ class MenuSelectionDialog {
 }
 
 type Operator = {
-  wave_form: HTMLSelectElement | undefined,
+  wave_form: {
+    left_button: HTMLButtonElement | undefined,
+    right_button: HTMLButtonElement | undefined,
+    wave_value: HTMLSpanElement | undefined,
+  },
   attack: HTMLInputElement | undefined,
   decay: HTMLInputElement | undefined,
   sustain: HTMLInputElement | undefined,
@@ -47,7 +52,7 @@ type Operator = {
 }
 
 type GlobalVariables = {
-  menuDialog: MenuSelectionDialog | undefined,
+  menu_dialog: MenuSelectionDialog | undefined,
   operators: {
     '1': Operator | undefined,
     '2': Operator | undefined,
@@ -57,19 +62,33 @@ type GlobalVariables = {
 }
 
 const globalVariables: GlobalVariables = {
-  menuDialog: undefined, operators: { '1': undefined, '2': undefined, '3': undefined, '4': undefined }
+  menu_dialog: undefined, operators: { '1': undefined, '2': undefined, '3': undefined, '4': undefined }
 }
 
 const initOperator = (operator_number: number): Operator => {
   const operator = {
-    wave_form: document.getElementById(`wave-form-selector-${operator_number}`) as HTMLSelectElement,
+    wave_form: {
+      wave_value: document.getElementById(`wave-type-${operator_number}`) as HTMLSpanElement,
+      left_button: document.getElementById(`left-wave-selector-${operator_number}`) as HTMLButtonElement,
+      right_button: document.getElementById(`right-wave-selector-${operator_number}`) as HTMLButtonElement,
+    },
     attack: document.getElementById(`attack-knob-${operator_number}`) as HTMLInputElement,
     decay: document.getElementById(`decay-knob-${operator_number}`) as HTMLInputElement,
     sustain: document.getElementById(`sustain-knob-${operator_number}`) as HTMLInputElement,
     release: document.getElementById(`release-knob-${operator_number}`) as HTMLInputElement,
-  }
+  } as Operator;
 
-  // operator.wave_form?.addEventListener('
+  operator.wave_form.right_button?.addEventListener('click', () => {
+    const idx = WAVE_FORMS.findIndex((w) => w.text === operator.wave_form.wave_value.textContent);
+    operator.wave_form.wave_value.setHTMLUnsafe(WAVE_FORMS[(idx + 1) % WAVE_FORMS.length].text);
+    window.electronAPI.sendMessage(`op ${operator_number} waveform ${WAVE_FORMS[(idx + 1) % WAVE_FORMS.length].value}`);
+  });
+
+  operator.wave_form.left_button?.addEventListener('click', () => {
+    const idx = WAVE_FORMS.findIndex((w) => w.text === operator.wave_form.wave_value.textContent);
+    operator.wave_form.wave_value.setHTMLUnsafe(WAVE_FORMS[(idx - 1) < 0 ? idx + WAVE_FORMS.length - 1 : idx].text);
+    window.electronAPI.sendMessage(`op ${operator_number} waveform ${WAVE_FORMS[(idx - 1) < 0 ? idx + WAVE_FORMS.length - 1 : idx].value}`);
+  });
 
   attachKnobListener(operator.attack, (value) => {
     window.electronAPI.sendMessage(`op ${operator_number} attack ${value}`);
@@ -104,14 +123,10 @@ const attachKnobListener = (
 
   knob.addEventListener("mousedown", (e) => {
     e.preventDefault();
-    console.log(e.x, knob.getBoundingClientRect().x + knob.clientWidth
-      , knob.getBoundingClientRect().x
-      , e.y, knob.getBoundingClientRect().y + knob.clientHeight
-      , knob.getBoundingClientRect().y);
-    if (e.x <= knob.getBoundingClientRect().x + knob.clientWidth
-      && e.x >= knob.getBoundingClientRect().x
-      && e.y <= knob.getBoundingClientRect().y + knob.clientHeight
-      && e.y >= knob.getBoundingClientRect().y) {
+    if (e.x <= knob.getBoundingClientRect().x + knob.clientWidth + 10
+      && e.x >= knob.getBoundingClientRect().x - 10
+      && e.y <= knob.getBoundingClientRect().y + knob.clientHeight + 10
+      && e.y >= knob.getBoundingClientRect().y - 10) {
       rotating = true;
     }
   });
@@ -177,7 +192,9 @@ const attachSliderListener = (
 }
 
 window.onload = () => {
-  globalVariables.menuDialog = new MenuSelectionDialog(document.getElementById('menu-dialog') as HTMLDialogElement);
+  document.getElementById('body-container');
+  // document.documentElement.style.setProperty('--window-height', `${}`);
+  globalVariables.menu_dialog = new MenuSelectionDialog(document.getElementById('menu-dialog') as HTMLDialogElement);
 
   for (let operator_number = 1; operator_number != 5; ++operator_number) {
     globalVariables.operators[`${operator_number}` as '1'] = initOperator(operator_number);
@@ -231,7 +248,7 @@ window.electronAPI.endKeyboardGrab(() => {
 
 
 window.electronAPI.selectDeviceName((deviceNames: string[]) => {
-  globalVariables.menuDialog?.addDialog('Select Device', deviceNames, (idx: number) => {
+  globalVariables.menu_dialog?.addDialog('Select Device', deviceNames, (idx: number) => {
     window.electronAPI.sendMessage(`selected device index ${idx}`);
   }, 'idx');
 });

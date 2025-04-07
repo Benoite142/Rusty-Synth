@@ -1,4 +1,4 @@
-import { app, BrowserWindow, ipcMain } from 'electron';
+import { app, BrowserWindow, ipcMain, Menu } from 'electron';
 import * as path from 'path'
 import { ConnectionHandler } from './connection_handler';
 
@@ -7,6 +7,10 @@ const isDevEnv = !app.isPackaged;
 const getDirPath = (): string => {
 	return isDevEnv ? __dirname : process.resourcesPath;
 }
+
+const windowMenu = [{
+	label: 'test', click: () => console.log('this is test item')
+}]
 
 const createMainWindow = (): BrowserWindow => {
 	const window = new BrowserWindow({
@@ -24,6 +28,8 @@ const createMainWindow = (): BrowserWindow => {
 	if (isDevEnv) {
 		window.webContents.openDevTools();
 	}
+
+	Menu.setApplicationMenu(Menu.buildFromTemplate(windowMenu));
 
 	window.loadFile(path.join(getDirPath(), 'renderer/index.html'));
 	return window;
