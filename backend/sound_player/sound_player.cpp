@@ -1,6 +1,5 @@
 #include "sound_player.hpp"
 #include "../synthetiser/constants.h"
-#include "../synthetiser/oscillator/oscillator.hpp"
 #include "../utils/sound_conversions.hpp"
 #include "../utils/synth_utils.hpp"
 #include <alsa/control.h>
@@ -187,13 +186,13 @@ void SoundPlayer::setup_pipe() {
   }
 }
 
-void SoundPlayer::playAsync(float *buffer, std::vector<Oscillator> *osc,
+void SoundPlayer::playAsync(float *buffer, Operator *synth_operator,
                             NoteMap *note_map, std::mutex *map_mutex) {
   int error = 0;
   setup_pipe();
   private_data data{
       .buffer = buffer,
-      .osc = osc,
+      .synth_operator = synth_operator,
       .note_map = note_map,
       .map_mutex = map_mutex,
   };
@@ -208,23 +207,15 @@ void SoundPlayer::playAsync(float *buffer, std::vector<Oscillator> *osc,
   /// initial write
   map_mutex->lock();
   for (size_t i = 0; i < note_map->notes.size(); ++i) {
-    // update frequencies if need be
-    if (note_map->notes[i].note_value != -1) {
-      auto note = calculate_frequency(note_map->notes[i].note_value);
 
-      (*osc)[i].setFrequency(note);
-      (*osc)[i].noteOn();
-    } else {
-      (*osc)[i].noteOff();
-    }
+    auto note = calculate_frequency(note_map->notes[i].note_value);
+    synth_operator->updateFrequency(i, note);
 
     *note_map->has_updated_value = false;
     map_mutex->unlock();
     for (int count = 0; count < 2; count++) {
       for (int i = 0; i < BUFFER_SIZE; ++i) {
-        for (auto &sineOsc : *osc) {
-          buffer[i] = sineOsc.advance(); // floatTo16bits(osc->advance());
-        }
+        buffer[i] = 0; // floatTo16bits(osc->advance());
       }
 
       do {

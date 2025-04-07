@@ -27,7 +27,7 @@ int KeyboardSniffer::init() {
   std::optional<Window> possible_window;
 
   size_t attempt = 0;
-  while (attempt++ < 10) {
+  while (attempt++ < 20) {
     possible_window = X11findWindow(display);
 
     if (possible_window.has_value()) {
@@ -36,7 +36,7 @@ int KeyboardSniffer::init() {
     }
 
     // timeout 1 second to let interface boot
-    // if after 10 tries it doesnt boot we abandon
+    // if after 20 tries it doesnt boot we abandon
     std::this_thread::sleep_for(std::chrono::milliseconds(1000));
   }
 
@@ -75,19 +75,20 @@ int KeyboardSniffer::sniff(NoteMap *note_map, std::mutex *note_map_lock) {
         XUnlockDisplay(display);
         break;
       }
-      note_map_lock->lock();
       // key press triggers multiple times
       // bypassing repeats by checking if it not currently active
       short midi_note = findMidiNote(*mapKeyCodeToString(event.xkey));
-
-      auto it = std::find(note_map->notes.begin(), note_map->notes.end(),
-                          Note{.note_value = midi_note});
-      if (it == note_map->notes.end() || it->released) {
-        note_map->notes[idx++ % note_map->notes.size()] = {
-            .note_value = midi_note, .released = false};
-        *note_map->has_updated_value = true;
+      if (midi_note != -1) {
+        note_map_lock->lock();
+        auto it = std::find(note_map->notes.begin(), note_map->notes.end(),
+                            Note{.note_value = midi_note});
+        if (it == note_map->notes.end() || it->released) {
+          note_map->notes[idx++ % note_map->notes.size()] = {
+              .note_value = midi_note, .released = false};
+          *note_map->has_updated_value = true;
+        }
+        note_map_lock->unlock();
       }
-      note_map_lock->unlock();
     }
 
     if (event.type == KeyRelease) {
@@ -99,7 +100,6 @@ int KeyboardSniffer::sniff(NoteMap *note_map, std::mutex *note_map_lock) {
         it->released = true;
         *note_map->has_updated_value = true;
       }
-
       note_map_lock->unlock();
     }
 

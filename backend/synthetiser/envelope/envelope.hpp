@@ -9,19 +9,17 @@ private:
   double decayTime;        // decay knob
   double sustainAmplitude; // sustain knob
   double releaseTime;      // release knob
-  double startAmplitude;   // operator volume
-  double releaseStartAmplitude = 0.0;
-  double amplitude = 0.0;
-  EnvelopeState state = IDLE;
 
 public:
   EnvelopeADSR(double attackTime = 1.6, double decayTime = 1.5,
-               double sustainAmplitude = 0.5, double releaseTime = 1.5,
-               double startAmplitude = 1.0);
-  double getAmplitude();
-
-  void noteOn();
-
-  void noteOff();
+               double sustainAmplitude = 0.5, double releaseTime = 1.5);
+  double getAttackTime();
+  double getDecayTime();
+  double getSustainAmplitude();
+  double getReleaseTime();
+  void setAttackTime(double value);
+  void setDecayTime(double value);
+  void setSustainAmplitude(double value);
+  void setReleaseTime(double value);
 };
 #endif

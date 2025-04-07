@@ -2,10 +2,12 @@
 #include "../constants.h"
 #include <cmath>
 
-Oscillator::Oscillator(float freq, Waveform wave)
-    : frequency{freq}, waveform(wave) {
+Oscillator::Oscillator(float freq, Waveform wave, EnvelopeADSR *env,
+                       float peakAmplitude)
+    : frequency{freq}, waveform(wave), peakAmplitude(peakAmplitude) {
   offset_sine_square = 2 * PI * (freq / SAMPLE_RATE);
   offset_triangle_saw = freq / SAMPLE_RATE;
+  envelope = env;
 }
 
 void Oscillator::setWaveform(Waveform newWaveform) { waveform = newWaveform; }
@@ -40,8 +42,8 @@ float Oscillator::advance_sine() {
     sine_angle += 2 * PI;
   }
 
-  float amp = envelope.getAmplitude();
-  return amp * std::sin(sine_angle);
+  getAmplitude();
+  return amplitude * std::sin(sine_angle);
 }
 
 float Oscillator::advance_square() {
@@ -51,11 +53,11 @@ float Oscillator::advance_square() {
 
   while (square_angle < 0)
     square_angle += 2 * (float)PI;
-
+  getAmplitude();
   if (square_angle < (float)PI)
-    return envelope.getAmplitude();
+    return amplitude;
   else
-    return -envelope.getAmplitude();
+    return -amplitude;
 }
 
 float Oscillator::advance_saw() {
@@ -66,8 +68,8 @@ float Oscillator::advance_saw() {
   while (saw_angle < 0.0f) {
     saw_angle += 1.0f;
   }
-  float amp = envelope.getAmplitude();
-  return amp * ((saw_angle * 2.0f) - 1.0f);
+  getAmplitude();
+  return amplitude * ((saw_angle * 2.0f) - 1.0f);
 }
 
 float Oscillator::advance_triangle() {
@@ -83,9 +85,9 @@ float Oscillator::advance_triangle() {
     ret = triangle_angle * 2;
   else
     ret = (1.0f - triangle_angle) * 2;
-  float amp = envelope.getAmplitude();
+  getAmplitude();
 
-  return amp * ((ret * 2.0f) - 1.0f);
+  return amplitude * ((ret * 2.0f) - 1.0f);
 }
 
 void Oscillator::setFrequency(float new_freq) {
@@ -94,6 +96,56 @@ void Oscillator::setFrequency(float new_freq) {
   offset_triangle_saw = frequency / SAMPLE_RATE;
 }
 
-void Oscillator::noteOff() { envelope.noteOff(); }
+void Oscillator::noteOn() {
+  if (state == IDLE || state == RELEASE) {
+    state = ATTACK;
+  }
+}
 
-void Oscillator::noteOn() { envelope.noteOn(); }
+void Oscillator::noteOff() {
+  if (state == RELEASE) {
+    return;
+  }
+  state = RELEASE;
+  releaseStartAmplitude = amplitude;
+}
+
+void Oscillator::getAmplitude() {
+  switch (state) {
+  case ATTACK:
+    amplitude += (peakAmplitude / envelope->getAttackTime()) * DELTA_TIME;
+    if (amplitude >= peakAmplitude && state != DECAY) {
+      amplitude = peakAmplitude;
+      state = DECAY;
+    }
+    break;
+  case DECAY:
+    amplitude -= ((peakAmplitude - envelope->getSustainAmplitude()) /
+                  envelope->getDecayTime()) *
+                 DELTA_TIME;
+    if (amplitude <= envelope->getSustainAmplitude()) {
+
+      amplitude = envelope->getSustainAmplitude();
+      state = SUSTAIN;
+    }
+    break;
+
+  case SUSTAIN:
+    amplitude = envelope->getSustainAmplitude();
+    return;
+    break;
+
+  case RELEASE:
+    amplitude -=
+        (releaseStartAmplitude / envelope->getReleaseTime()) * DELTA_TIME;
+    if (amplitude <= 0.001) {
+      amplitude = 0.0;
+      state = IDLE;
+    }
+    break;
+
+  case IDLE:
+    amplitude = 0.0;
+    break;
+  }
+}
