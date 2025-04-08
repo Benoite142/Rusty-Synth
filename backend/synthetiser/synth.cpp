@@ -2,13 +2,16 @@
 #include "../utils/note_map.hpp"
 #include "constants.h"
 #include "envelope/envelope.hpp"
+#include "low_frequency_oscillator/low_frequency_oscillator.hpp"
 #include "operator/operator.hpp"
 #include "oscillator/oscillator.hpp"
 #include <iostream>
 
 Synth::Synth(
     std::function<size_t(std::vector<std::string> *)> selectDeviceCallback)
-    : synth_operator{2, 0.5f, EnvelopeADSR{}, Waveform::SQUARE} {
+    : lfo_1(5, Waveform::SINE, 0.3), lfo_2(5, Waveform::SINE, 0.3),
+      synth_operator{2,      0.5f,  EnvelopeADSR{}, Waveform::SQUARE,
+                     &lfo_1, &lfo_2} {
   this->selectDeviceCallback = selectDeviceCallback;
 }
 
