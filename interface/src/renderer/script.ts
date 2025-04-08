@@ -193,7 +193,6 @@ const attachSliderListener = (
 
 window.onload = () => {
   document.getElementById('body-container');
-  // document.documentElement.style.setProperty('--window-height', `${}`);
   globalVariables.menu_dialog = new MenuSelectionDialog(document.getElementById('menu-dialog') as HTMLDialogElement);
 
   for (let operator_number = 1; operator_number != 5; ++operator_number) {
@@ -201,7 +200,7 @@ window.onload = () => {
   }
 
 
-  const keyboardGrabButton = document.getElementById('grab-keyboard-button');
+  const keyboardGrabButton = document.getElementById('keyboard-activator');
   const high_pass_knob = document.getElementById("high-pass-knob");
   const low_pass_knob = document.getElementById("low-pass-knob");
   const syncButton = document.getElementById(

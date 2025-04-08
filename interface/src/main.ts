@@ -8,9 +8,32 @@ const getDirPath = (): string => {
 	return isDevEnv ? __dirname : process.resourcesPath;
 }
 
-const windowMenu = [{
-	label: 'test', click: () => console.log('this is test item')
-}]
+const windowMenu: Electron.MenuItemConstructorOptions[] = [{
+	label: 'Select Devices', submenu: [
+		{
+			label: 'MIDI Device',
+			click: () => console.log('user requested midi device connection')
+		},
+		{
+			label: 'Output Device',
+			click: () => console.log('user requested output device connection')
+		}
+	]
+},
+{
+	label: 'Audio Recording', submenu: [
+		{
+			label: 'Start Recording',
+			click: () => console.log('user requested recording start')
+		},
+		{
+			label: 'Stop Recording',
+			click: () => console.log('user requested recording stop')
+		}
+	]
+}
+]
+
 
 const createMainWindow = (): BrowserWindow => {
 	const window = new BrowserWindow({
