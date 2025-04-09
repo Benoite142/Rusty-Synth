@@ -1,475 +1,721 @@
 <!DOCTYPE html>
 <html>
+    <head>
+        <meta
+            http-equiv="Content-Security-Policy"
+            content="script-src 'self'"
+        />
+        <link rel="stylesheet" href="./style.css" />
+        <script src="./script.js"></script>
+    </head>
 
-<head>
-	<meta http-equiv="Content-Security-Policy" content="script-src 'self'" />
-	<link rel="stylesheet" href="./style.css">
-	<script src="./script.js"></script>
-</head>
+    <body>
+        <dialog id="menu-dialog"></dialog>
+        <div id="body-container" class="container">
+            <div class="top-main">
+                <div class="sidebar panel">
+                    <div class="text text-title">MAIN</div>
+                    <div class="voices">
+                        <span class="text"> VOICES </span>
+                        <input
+                            type="range"
+                            min="1"
+                            max="10"
+                            steps="1"
+                            value="1"
+                            id="voice-range"
+                            class="slider"
+                        />
+                        <div class="voice-range-labels">
+                            <span class="text text-normal">1</span>
+                            <span class="text text-normal">5</span>
+                            <span class="text text-normal">10</span>
+                        </div>
+                    </div>
+                    <div class="filter">
+                        <div class="text text-normal">High-Pass Filter</div>
+                        <div class="knob-big knob-container">
+                            <div class="knob" id="high-pass-knob"></div>
+                        </div>
+                    </div>
+                    <div class="filter">
+                        <div class="text text-normal">Low-Pass Filter</div>
+                        <div class="knob-big knob-container">
+                            <div class="knob" id="low-pass-knob"></div>
+                        </div>
+                    </div>
+                    <div class="master-volume">
+                        <label for="main-volume" class="text text-normal"
+                            >VOLUME</label
+                        >
+                        <input
+                            class="slider"
+                            type="range"
+                            id="main-volume"
+                            min="0"
+                            max="100"
+                            value="50"
+                            orient="vertical"
+                        />
+                    </div>
+                </div>
+                <div class="operators-container panel">
+                    <div class="op">
+                        <div class="text text-big">OP1</div>
+                        <div class="op-volume" title="Operator's Volume">
+                            <label for="volume-level-1" class="text text-normal"
+                                >VOLUME</label
+                            >
+                            <input
+                                type="range"
+                                min="0"
+                                max="100"
+                                value="50"
+                                orient="vertical"
+                                class="slider"
+                                id="volume-level-1"
+                            />
+                        </div>
+                        <div class="waveform">
+                            <div>
+                                <span class="text text-big">SHAPE</span>
+                                <div class="shape-selector">
+                                    <button
+                                        id="left-wave-selector-1"
+                                        class="arrow-button text"
+                                    >
+                                        &larr;
+                                    </button>
+                                    <span
+                                        id="wave-type-1"
+                                        class="text text-normal"
+                                        >Sine Wave</span
+                                    >
+                                    <button
+                                        id="right-wave-selector-1"
+                                        class="arrow-button text"
+                                    >
+                                        &rarr;
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="pitch">
+                                <span class="text text-normal">PITCH</span>
+                                <div class="pitch-grid">
+                                    <div class="pitch-params">
+                                        <span class="text text-small"
+                                            >COARSE</span
+                                        >
+                                        <div class="knob-small knob-container">
+                                            <div
+                                                class="knob"
+                                                id="pitch-coarse-knob-1"
+                                            ></div>
+                                        </div>
+                                    </div>
+                                    <div class="pitch-params">
+                                        <span class="text text-small"
+                                            >FINE</span
+                                        >
+                                        <div class="knob-small knob-container">
+                                            <div
+                                                class="knob"
+                                                id="pitch-fine-knob-1"
+                                            ></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="envelope-adsr">
+                            <span class="text text-big">ADSR ENVELOPE</span>
+                            <div class="adsr">
+                                <div class="knob-label-wrapper">
+                                    <span class="text text-normal">ATT</span>
+                                    <div class="knob-small knob-container">
+                                        <div
+                                            class="knob"
+                                            id="attack-knob-1"
+                                        ></div>
+                                    </div>
+                                </div>
+                                <div class="knob-label-wrapper">
+                                    <span class="text text-normal">DEC</span>
+                                    <div class="knob-small knob-container">
+                                        <div
+                                            class="knob"
+                                            id="decay-knob-1"
+                                        ></div>
+                                    </div>
+                                </div>
+                                <div class="knob-label-wrapper">
+                                    <span class="text text-normal">SUS</span>
+                                    <div class="knob-small knob-container">
+                                        <div
+                                            class="knob"
+                                            id="sustain-knob-1"
+                                        ></div>
+                                    </div>
+                                </div>
+                                <div class="knob-label-wrapper">
+                                    <span class="text text-normal">REL</span>
+                                    <div class="knob-small knob-container">
+                                        <div
+                                            class="knob"
+                                            id="release-knob-1"
+                                        ></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="keyboard-control">
+                            <div class="voices-link">
+                                <span class="text text-big">Link</span>
+                                <div class="link-lfo">
+                                    <div class="sync">
+                                        <span class="text text-normal"
+                                            >LFO1</span
+                                        >
+                                        <button
+                                            class="light-up-button"
+                                            id="lfo1-link-1"
+                                        >
+                                            <span class="light-up"></span>
+                                        </button>
+                                    </div>
+                                    <div class="sync">
+                                        <span class="text text-normal"
+                                            >LFO2</span
+                                        >
+                                        <button
+                                            class="light-up-button"
+                                            id="lfo2-link-1"
+                                        >
+                                            <span class="light-up"></span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="op">
+                        <div class="text text-big">OP2</div>
+                        <div class="op-volume" title="Operator's Volume">
+                            <label for="volume-level-2" class="text text-normal"
+                                >VOLUME</label
+                            >
+                            <input
+                                type="range"
+                                min="0"
+                                max="100"
+                                value="50"
+                                orient="vertical"
+                                class="slider"
+                                id="volume-level-2"
+                            />
+                        </div>
+                        <div class="waveform">
+                            <div>
+                                <span class="text text-big">SHAPE</span>
+                                <div class="shape-selector">
+                                    <button
+                                        id="left-wave-selector-2"
+                                        class="arrow-button text"
+                                    >
+                                        &larr;
+                                    </button>
+                                    <span
+                                        id="wave-type-2"
+                                        class="text text-normal"
+                                        >Sine Wave</span
+                                    >
+                                    <button
+                                        id="right-wave-selector-2"
+                                        class="arrow-button text"
+                                    >
+                                        &rarr;
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="pitch">
+                                <span class="text text-normal">PITCH</span>
+                                <div class="pitch-grid">
+                                    <div class="pitch-params">
+                                        <span class="text text-small"
+                                            >COARSE</span
+                                        >
+                                        <div class="knob-small knob-container">
+                                            <div
+                                                class="knob"
+                                                id="pitch-coarse-knob-2"
+                                            ></div>
+                                        </div>
+                                    </div>
+                                    <div class="pitch-params">
+                                        <span class="text text-small"
+                                            >FINE</span
+                                        >
+                                        <div class="knob-small knob-container">
+                                            <div
+                                                class="knob"
+                                                id="pitch-fine-knob-2"
+                                            ></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="envelope-adsr">
+                            <span class="text text-big">ADSR ENVELOPE</span>
+                            <div class="adsr">
+                                <div class="knob-label-wrapper">
+                                    <span class="text text-normal">ATT</span>
+                                    <div class="knob-small knob-container">
+                                        <div
+                                            class="knob"
+                                            id="attack-knob-2"
+                                        ></div>
+                                    </div>
+                                </div>
+                                <div class="knob-label-wrapper">
+                                    <span class="text text-normal">DEC</span>
+                                    <div class="knob-small knob-container">
+                                        <div
+                                            class="knob"
+                                            id="decay-knob-2"
+                                        ></div>
+                                    </div>
+                                </div>
+                                <div class="knob-label-wrapper">
+                                    <span class="text text-normal">SUS</span>
+                                    <div class="knob-small knob-container">
+                                        <div
+                                            class="knob"
+                                            id="sustain-knob-2"
+                                        ></div>
+                                    </div>
+                                </div>
+                                <div class="knob-label-wrapper">
+                                    <span class="text text-normal">REL</span>
+                                    <div class="knob-small knob-container">
+                                        <div
+                                            class="knob"
+                                            id="release-knob-2"
+                                        ></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="keyboard-control">
+                            <div class="voices-link">
+                                <span class="text text-big">Link</span>
+                                <div class="link-lfo">
+                                    <div class="sync">
+                                        <span class="text text-normal"
+                                            >LFO1</span
+                                        >
+                                        <button
+                                            class="light-up-button"
+                                            id="lfo1-link-2"
+                                        >
+                                            <span class="light-up"></span>
+                                        </button>
+                                    </div>
+                                    <div class="sync">
+                                        <span class="text text-normal"
+                                            >LFO2</span
+                                        >
+                                        <button
+                                            class="light-up-button"
+                                            id="lfo2-link-2"
+                                        >
+                                            <span class="light-up"></span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="op">
+                        <div class="text text-big">OP3</div>
+                        <div class="op-volume" title="Operator's Volume">
+                            <label for="volume-level-3" class="text text-normal"
+                                >VOLUME</label
+                            >
+                            <input
+                                type="range"
+                                min="0"
+                                max="100"
+                                value="50"
+                                orient="vertical"
+                                class="slider"
+                                id="volume-level-3"
+                            />
+                        </div>
+                        <div class="waveform">
+                            <div>
+                                <span class="text text-big">SHAPE</span>
+                                <div class="shape-selector">
+                                    <button
+                                        id="left-wave-selector-3"
+                                        class="arrow-button text"
+                                    >
+                                        &larr;
+                                    </button>
+                                    <span
+                                        id="wave-type-3"
+                                        class="text text-normal"
+                                        >Sine Wave</span
+                                    >
+                                    <button
+                                        id="right-wave-selector-3"
+                                        class="arrow-button text"
+                                    >
+                                        &rarr;
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="pitch">
+                                <span class="text text-normal">PITCH</span>
+                                <div class="pitch-grid">
+                                    <div class="pitch-params">
+                                        <span class="text text-small"
+                                            >COARSE</span
+                                        >
+                                        <div class="knob-small knob-container">
+                                            <div
+                                                class="knob"
+                                                id="pitch-coarse-knob-3"
+                                            ></div>
+                                        </div>
+                                    </div>
+                                    <div class="pitch-params">
+                                        <span class="text text-small"
+                                            >FINE</span
+                                        >
+                                        <div class="knob-small knob-container">
+                                            <div
+                                                class="knob"
+                                                id="pitch-fine-knob-3"
+                                            ></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="envelope-adsr">
+                            <span class="text text-big">ADSR ENVELOPE</span>
+                            <div class="adsr">
+                                <div class="knob-label-wrapper">
+                                    <span class="text text-normal">ATT</span>
+                                    <div class="knob-small knob-container">
+                                        <div
+                                            class="knob"
+                                            id="attack-knob-3"
+                                        ></div>
+                                    </div>
+                                </div>
+                                <div class="knob-label-wrapper">
+                                    <span class="text text-normal">DEC</span>
+                                    <div class="knob-small knob-container">
+                                        <div
+                                            class="knob"
+                                            id="decay-knob-3"
+                                        ></div>
+                                    </div>
+                                </div>
+                                <div class="knob-label-wrapper">
+                                    <span class="text text-normal">SUS</span>
+                                    <div class="knob-small knob-container">
+                                        <div
+                                            class="knob"
+                                            id="sustain-knob-3"
+                                        ></div>
+                                    </div>
+                                </div>
+                                <div class="knob-label-wrapper">
+                                    <span class="text text-normal">REL</span>
+                                    <div class="knob-small knob-container">
+                                        <div
+                                            class="knob"
+                                            id="release-knob-3"
+                                        ></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="keyboard-control">
+                            <div class="voices-link">
+                                <span class="text text-big">Link</span>
+                                <div class="link-lfo">
+                                    <div class="sync">
+                                        <span class="text text-normal"
+                                            >LFO1</span
+                                        >
+                                        <button
+                                            class="light-up-button"
+                                            id="lfo1-link-3"
+                                        >
+                                            <span class="light-up"></span>
+                                        </button>
+                                    </div>
+                                    <div class="sync">
+                                        <span class="text text-normal"
+                                            >LFO2</span
+                                        >
+                                        <button
+                                            class="light-up-button"
+                                            id="lfo2-link-3"
+                                        >
+                                            <span class="light-up"></span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="op">
+                        <div class="text text-big">OP4</div>
+                        <div class="op-volume" title="Operator's Volume">
+                            <label for="volume-level-4" class="text text-normal"
+                                >VOLUME</label
+                            >
+                            <input
+                                type="range"
+                                min="0"
+                                max="100"
+                                value="50"
+                                orient="vertical"
+                                class="slider"
+                                id="volume-level-4"
+                            />
+                        </div>
+                        <div class="waveform">
+                            <div>
+                                <span class="text text-big">SHAPE</span>
+                                <div class="shape-selector">
+                                    <button
+                                        id="left-wave-selector-4"
+                                        class="arrow-button text"
+                                    >
+                                        &larr;
+                                    </button>
+                                    <span
+                                        id="wave-type-4"
+                                        class="text text-normal"
+                                        >Sine Wave</span
+                                    >
+                                    <button
+                                        id="right-wave-selector-4"
+                                        class="arrow-button text"
+                                    >
+                                        &rarr;
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="pitch">
+                                <span class="text text-normal">PITCH</span>
+                                <div class="pitch-grid">
+                                    <div class="pitch-params">
+                                        <span class="text text-small"
+                                            >COARSE</span
+                                        >
+                                        <div class="knob-small knob-container">
+                                            <div
+                                                class="knob"
+                                                id="pitch-coarse-knob-4"
+                                            ></div>
+                                        </div>
+                                    </div>
+                                    <div class="pitch-params">
+                                        <span class="text text-small"
+                                            >FINE</span
+                                        >
+                                        <div class="knob-small knob-container">
+                                            <div
+                                                class="knob"
+                                                id="pitch-fine-knob-4"
+                                            ></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="envelope-adsr">
+                            <span class="text text-big">ADSR ENVELOPE</span>
+                            <div class="adsr">
+                                <div class="knob-label-wrapper">
+                                    <span class="text text-normal">ATT</span>
+                                    <div class="knob-small knob-container">
+                                        <div
+                                            class="knob"
+                                            id="attack-knob-4"
+                                        ></div>
+                                    </div>
+                                </div>
+                                <div class="knob-label-wrapper">
+                                    <span class="text text-normal">DEC</span>
+                                    <div class="knob-small knob-container">
+                                        <div
+                                            class="knob"
+                                            id="decay-knob-4"
+                                        ></div>
+                                    </div>
+                                </div>
+                                <div class="knob-label-wrapper">
+                                    <span class="text text-normal">SUS</span>
+                                    <div class="knob-small knob-container">
+                                        <div
+                                            class="knob"
+                                            id="sustain-knob-4"
+                                        ></div>
+                                    </div>
+                                </div>
+                                <div class="knob-label-wrapper">
+                                    <span class="text text-normal">REL</span>
+                                    <div class="knob-small knob-container">
+                                        <div
+                                            class="knob"
+                                            id="release-knob-4"
+                                        ></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="keyboard-control">
+                            <div class="voices-link">
+                                <span class="text text-big">Link</span>
+                                <div class="link-lfo">
+                                    <div class="sync">
+                                        <span class="text text-normal"
+                                            >LFO1</span
+                                        >
+                                        <button
+                                            class="light-up-button"
+                                            id="lfo1-link-4"
+                                        >
+                                            <span class="light-up"></span>
+                                        </button>
+                                    </div>
+                                    <div class="sync">
+                                        <span class="text text-normal"
+                                            >LFO2</span
+                                        >
+                                        <button
+                                            class="light-up-button"
+                                            id="lfo2-link-4"
+                                        >
+                                            <span class="light-up"></span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="lfo-container">
+                    <div class="lfo panel">
+                        <span class="text text-title">LF01</span>
+                        <div class="waveform">
+                            <span class="text text-big">Shape</span>
+                            <div class="shape-selector">
+                                <button
+                                    id="left-wave-selector-lfo-1"
+                                    class="arrow-button text"
+                                >
+                                    &larr;
+                                </button>
+                                <span
+                                    id="wave-type-lfo-1"
+                                    class="text text-normal"
+                                    >Sine Wave</span
+                                >
+                                <button
+                                    id="right-wave-selector-lfo-1"
+                                    class="arrow-button text"
+                                >
+                                    &rarr;
+                                </button>
+                            </div>
+                        </div>
+                        <div class="knobs">
+                            <div class="rate">
+                                <div class="knob-label-wrapper">
+                                    <span class="text text-normal">RATE</span>
+                                    <div class="knob-big knob-container">
+                                        <div
+                                            class="knob"
+                                            id="rate-knob-lfo-1"
+                                        ></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="amount">
+                                <div class="knob-label-wrapper">
+                                    <span class="text text-normal">AMOUNT</span>
+                                    <div class="knob-big knob-container">
+                                        <div
+                                            class="knob"
+                                            id="amount-knob-lfo-1"
+                                        ></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="lfo panel">
+                        <span class="text text-title">LF02</span>
+                        <div class="waveform">
+                            <span class="text text-big">Shape</span>
+                            <div class="shape-selector">
+                                <button
+                                    id="left-wave-selector-lfo-2"
+                                    class="arrow-button text"
+                                >
+                                    &larr;
+                                </button>
+                                <span
+                                    id="wave-type-lfo-2"
+                                    class="text text-normal"
+                                    >Sine Wave</span
+                                >
+                                <button
+                                    id="right-wave-selector-lfo-2"
+                                    class="arrow-button text"
+                                >
+                                    &rarr;
+                                </button>
+                            </div>
+                        </div>
+                        <div class="knobs">
+                            <div class="rate">
+                                <div class="knob-label-wrapper">
+                                    <span class="text text-normal">RATE</span>
+                                    <div class="knob-big knob-container">
+                                        <div
+                                            class="knob"
+                                            id="rate-knob-lfo-2"
+                                        ></div>
+                                    </div>
+                                </div>
+                            </div>
 
-<body>
-	<dialog id="menu-dialog"></dialog>
-	<div id="body-container" class="container">
-		<div class="top-main">
-			<div class="sidebar panel">
-				<div class="text text-title">MAIN</div>
-				<div class="voices">
-					<span class="text">
-						VOICES
-					</span>
-					<div class="voice-range">
-						<input type="range" min="1" max="10" steps="1" value="1" id="voice-range-op1" class="slider">
-						<div class="voice-range-labels">
-							<span>1</span>
-							<span>5</span>
-							<span>10</span>
-						</div>
-					</div>
-				</div>
-				<div class="high-pass-filter">
-					<div class="text text-normal">High-Pass Filter</div>
-					<div class="knob-big knob-container" id="asdf">
-						<div class="knob" id="high-pass-knob"></div>
-					</div>
-				</div>
-				<div class="low-pass-filter">
-					<div class="text text-normal">Low-Pass Filter</div>
-					<div class="knob-big knob-container">
-						<div class="knob" id="low-pass-knob"></div>
-					</div>
-				</div>
-				<div class="master-volume">
-					<label for="main-volume" class="text text-normal">VOLUME</label>
-					<input class="slider" type="range" id="main-volume" min="0" max="100" value="50" orient="vertical">
-				</div>
-			</div>
-			<div class="operators-container panel">
-				<div class="op">
-					<div class="text text-big">
-						OP1
-					</div>
-					<div class="op-volume">
-						<label for="volume-level-1" class="text text-normal">VOLUME</label>
-						<input type="range" min="0" max="100" value="50" orient="vertical" class="slider"
-							id="volume-level-1">
-					</div>
-					<div class="waveform">
-						<div>
-							<span class="text text-big">SHAPE</span>
-							<div class="shape-selector">
-								<button id="left-wave-selector-1" class="arrow-button text">&larr;</button>
-								<span id="wave-type-1" class="text text-normal">Sine Wave</span>
-								<button id="right-wave-selector-1" class="arrow-button text">&rarr;</button>
-							</div>
-						</div>
-						<div class="pitch">
-							<span class="text text-normal">PITCH</span>
-							<div class="pitch-grid">
-								<div class="pitch-params">
-									<span class="text text-small">COARSE</span>
-									<div class="knob-small knob-container">
-										<div class="knob" id="pitch-coarse-knob-1"></div>
-									</div>
-								</div>
-								<div class="pitch-params">
-									<span class="text text-small">FINE</span>
-									<div class="knob-small knob-container">
-										<div class="knob" id="pitch-fine-knob-1"></div>
-									</div>
-								</div>
-							</div>
-						</div>
-					</div>
-					<div class="envelope-adsr">
-						<span class="text text-big">ADSR ENVELOPE</span>
-						<div class="adsr">
-							<div class="knob-label-wrapper">
-								<span class="text text-normal">ATT</span>
-								<div class="knob-small knob-container">
-									<div class="knob" id="attack-knob-1"></div>
-								</div>
-							</div>
-							<div class="knob-label-wrapper">
-								<span class="text text-normal">DEC</span>
-								<div class="knob-small knob-container">
-									<div class="knob" id="decay-knob-1"></div>
-								</div>
-							</div>
-							<div class="knob-label-wrapper">
-								<span class="text text-normal">SUS</span>
-								<div class="knob-small knob-container">
-									<div class="knob" id="sustain-knob-1"></div>
-								</div>
-							</div>
-							<div class="knob-label-wrapper">
-								<span class="text text-normal">REL</span>
-								<div class="knob-small knob-container">
-									<div class="knob" id="release-knob-1"></div>
-								</div>
-							</div>
-						</div>
-					</div>
-					<div class="keyboard-control">
-						<div class="voices-link">
-							<span class="text text-big">Link</span>
-							<div class="link-lfo">
-								<div class="sync">
-									<span class="text text-normal">LFO1</span>
-									<button class="light-up-button" id="link-lfo1-1">
-										<span class="light-up"></span>
-									</button>
-								</div>
-								<div class="sync">
-									<span class="text text-normal">LFO2</span>
-									<button class="light-up-button" id="link-lfo2-1">
-										<span class="light-up"></span>
-									</button>
-								</div>
-							</div>
-						</div>
-					</div>
-				</div>
-				<div class="op">
-					<div class="text text-big">
-						OP2
-					</div>
-					<div class="op-volume">
-						<label for="volume-level-2" class="text text-normal">VOLUME</label>
-						<input type="range" min="0" max="100" value="50" orient="vertical" class="slider"
-							id="volume-level-2">
-					</div>
-					<div class="waveform">
-						<div>
-							<span class="text text-big">SHAPE</span>
-							<div class="shap-selector">
-								<button id="left-wave-selector-2" class="arrow-button text">&larr;</button>
-								<span id="wave-type-2" class="text text-normal">Sine Wave</span>
-								<button id="right-wave-selector-2" class="arrow-button text">&rarr;</button>
-							</div>
-						</div>
-						<div class="pitch">
-							<span class="text text-normal">PITCH</span>
-							<div class="pitch-grid">
-								<div class="pitch-params">
-									<span class="text text-small">COARSE</span>
-									<div class="knob-small knob-container">
-										<div class="knob" id="pitch-coarse-knob-2"></div>
-									</div>
-								</div>
-								<div class="pitch-params">
-									<span class="text text-small">FINE</span>
-									<div class="knob-small knob-container">
-										<div class="knob" id="pitch-fine-knob-2"></div>
-									</div>
-								</div>
-							</div>
-						</div>
-					</div>
-					<div class="envelope-adsr">
-						<span class="text text-big">ADSR ENVELOPE</span>
-						<div class="adsr">
-							<div class="knob-label-wrapper">
-								<span class="text text-normal">ATT</span>
-								<div class="knob-small knob-container">
-									<div class="knob" id="attack-knob-2"></div>
-								</div>
-							</div>
-							<div class="knob-label-wrapper">
-								<span class="text text-normal">DEC</span>
-								<div class="knob-small knob-container">
-									<div class="knob" id="decay-knob-2"></div>
-								</div>
-							</div>
-							<div class="knob-label-wrapper">
-								<span class="text text-normal">SUS</span>
-								<div class="knob-small knob-container">
-									<div class="knob" id="sustain-knob-2"></div>
-								</div>
-							</div>
-							<div class="knob-label-wrapper">
-								<span class="text text-normal">REL</span>
-								<div class="knob-small knob-container">
-									<div class="knob" id="release-knob-2"></div>
-								</div>
-							</div>
-						</div>
-					</div>
-					<div class="keyboard-control">
-						<div class="voices-link">
-							<span class="text text-big">Link</span>
-							<div class="link-lfo">
-								<div class="sync">
-									<span class="text text-normal">LFO1</span>
-									<button class="light-up-button" id="link-lfo1-2">
-										<span class="light-up"></span>
-									</button>
-								</div>
-								<div class="sync">
-									<span class="text text-normal">LFO2</span>
-									<button class="light-up-button" id="link-lfo2-2">
-										<span class="light-up"></span>
-									</button>
-								</div>
-							</div>
-						</div>
-					</div>
-				</div>
-				<div class="op">
-					<div class="text text-big">
-						OP3
-					</div>
-					<div class="op-volume">
-						<label for="volume-level-3" class="text text-normal">VOLUME</label>
-						<input type="range" min="0" max="100" value="50" orient="vertical" class="slider"
-							id="volume-level-3">
-					</div>
-					<div class="waveform">
-						<div>
-							<span class="text text-big">SHAPE</span>
-							<div class="shape-selector">
-								<button id="left-wave-selector-3" class="arrow-button text">&larr;</button>
-								<span id="wave-type-3" class="text text-normal">Sine Wave</span>
-								<button id="right-wave-selector-3" class="arrow-button text">&rarr;</button>
-							</div>
-						</div>
-						<div class="pitch">
-							<span class="text text-normal">PITCH</span>
-							<div class="pitch-grid">
-								<div class="pitch-params">
-									<span class="text text-small">COARSE</span>
-									<div class="knob-small knob-container">
-										<div class="knob" id="pitch-coarse-knob-3"></div>
-									</div>
-								</div>
-								<div class="pitch-params">
-									<span class="text text-small">FINE</span>
-									<div class="knob-small knob-container">
-										<div class="knob" id="pitch-fine-knob-3"></div>
-									</div>
-								</div>
-							</div>
-						</div>
-					</div>
-					<div class="envelope-adsr">
-						<span class="text text-big">ADSR ENVELOPE</span>
-						<div class="adsr">
-							<div class="knob-label-wrapper">
-								<span class="text text-normal">ATT</span>
-								<div class="knob-small knob-container">
-									<div class="knob" id="attack-knob-3"></div>
-								</div>
-							</div>
-							<div class="knob-label-wrapper">
-								<span class="text text-normal">DEC</span>
-								<div class="knob-small knob-container">
-									<div class="knob" id="decay-knob-3"></div>
-								</div>
-							</div>
-							<div class="knob-label-wrapper">
-								<span class="text text-normal">SUS</span>
-								<div class="knob-small knob-container">
-									<div class="knob" id="sustain-knob-3"></div>
-								</div>
-							</div>
-							<div class="knob-label-wrapper">
-								<span class="text text-normal">REL</span>
-								<div class="knob-small knob-container">
-									<div class="knob" id="release-knob-3"></div>
-								</div>
-							</div>
-						</div>
-					</div>
-					<div class="keyboard-control">
-						<div class="voices-link">
-							<span class="text text-big">Link</span>
-							<div class="link-lfo">
-								<div class="sync">
-									<span class="text text-normal">LFO1</span>
-									<button class="light-up-button" id="link-lfo1-3">
-										<span class="light-up"></span>
-									</button>
-								</div>
-								<div class="sync">
-									<span class="text text-normal">LFO2</span>
-									<button class="light-up-button" id="link-lfo2-3">
-										<span class="light-up"></span>
-									</button>
-								</div>
-							</div>
-						</div>
-					</div>
-				</div>
-				<div class="op">
-					<div class="text text-big">
-						OP4
-					</div>
-					<div class="op-volume">
-						<label for="volume-level-4" class="text text-normal">VOLUME</label>
-						<input type="range" min="0" max="100" value="50" orient="vertical" class="slider"
-							id="volume-level-4">
-					</div>
-					<div class="waveform">
-						<div>
-							<span class="text text-big">SHAPE</span>
-							<div class="shape-selector">
-								<button id="left-wave-selector-4" class="arrow-button text">&larr;</button>
-								<span id="wave-type-4" class="text text-normal">Sine Wave</span>
-								<button id="right-wave-selector-4" class="arrow-button text">&rarr;</button>
-							</div>
-						</div>
-						<div class="pitch">
-							<span class="text text-normal">PITCH</span>
-							<div class="pitch-grid">
-								<div class="pitch-params">
-									<span class="text text-small">COARSE</span>
-									<div class="knob-small knob-container">
-										<div class="knob" id="pitch-coarse-knob-4"></div>
-									</div>
-								</div>
-								<div class="pitch-params">
-									<span class="text text-small">FINE</span>
-									<div class="knob-small knob-container">
-										<div class="knob" id="pitch-fine-knob-4"></div>
-									</div>
-								</div>
-							</div>
-						</div>
-					</div>
-					<div class="envelope-adsr">
-						<span class="text text-big">ADSR ENVELOPE</span>
-						<div class="adsr">
-							<div class="knob-label-wrapper">
-								<span class="text text-normal">ATT</span>
-								<div class="knob-small knob-container">
-									<div class="knob" id="attack-knob-4"></div>
-								</div>
-							</div>
-							<div class="knob-label-wrapper">
-								<span class="text text-normal">DEC</span>
-								<div class="knob-small knob-container">
-									<div class="knob" id="decay-knob-4"></div>
-								</div>
-							</div>
-							<div class="knob-label-wrapper">
-								<span class="text text-normal">SUS</span>
-								<div class="knob-small knob-container">
-									<div class="knob" id="sustain-knob-4"></div>
-								</div>
-							</div>
-							<div class="knob-label-wrapper">
-								<span class="text text-normal">REL</span>
-								<div class="knob-small knob-container">
-									<div class="knob" id="release-knob-4"></div>
-								</div>
-							</div>
-						</div>
-					</div>
-					<div class="keyboard-control">
-						<div class="voices-link">
-							<span class="text text-big">Link</span>
-							<div class="link-lfo">
-								<div class="sync">
-									<span class="text text-normal">LFO1</span>
-									<button class="light-up-button" id="link-lfo1-4">
-										<span class="light-up"></span>
-									</button>
-								</div>
-								<div class="sync">
-									<span class="text text-normal">LFO2</span>
-									<button class="light-up-button" id="link-lfo2-4">
-										<span class="light-up"></span>
-									</button>
-								</div>
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
-			<div class="lfo-container panel">
-				<div class="lfo">
-					<span class="text text-title">LF01</span>
-					<div class="waveform">
-						<span class="text text-big">Shape</span>
-						<div class="shape-selector">
-							<button id="left-wave-selector-lfo-1" class="arrow-button text">&larr;</button>
-							<span id="wave-type-lfo-1" class="text text-normal">Sine Wave</span>
-							<button id="right-wave-selector-lfo-1" class="arrow-button text">&rarr;</button>
-						</div>
-					</div>
-					<div class="knobs">
-						<div class="rate">
-							<div class="knob-label-wrapper">
-								<span class="text text-normal">RATE</span>
-								<div class="knob-big knob-container">
-									<div class="knob" id="rate-knob-lfo-1"></div>
-								</div>
-							</div>
-						</div>
-						<div class="amount">
-							<div class="knob-label-wrapper">
-								<span class="text text-normal">AMOUNT</span>
-								<div class="knob-big knob-container">
-									<div class="knob" id="amount-knob-lfo-1"></div>
-								</div>
-							</div>
-						</div>
-					</div>
-					<div class="sync">
-						<span class="text text-big">Sync</span>
-						<button class="light-up-button" id="light-up-button-lfo-1">
-							<span class="light-up"></span>
-						</button>
-					</div>
-					<label class="on-off">
-						<input type="checkbox" id="on-off-lfo-1" checked>
-						<span class="slider-on-off"></span>
-					</label>
-				</div>
-				<div class="lfo">
-					<span class="text text-title">LF02</span>
-					<div class="waveform">
-						<span class="text text-big">Shape</span>
-						<div class="shape-selector">
-							<button id="left-wave-selector-lfo-2" class="arrow-button text">&larr;</button>
-							<span id="wave-type-lfo-2" class="text text-normal">Sine Wave</span>
-							<button id="right-wave-selector-lfo-2" class="arrow-button text">&rarr;</button>
-						</div>
-					</div>
-					<div class="knobs">
-						<div class="rate">
-							<div class="knob-label-wrapper">
-								<span class="text text-normal">RATE</span>
-								<div class="knob-big knob-container">
-									<div class="knob" id="rate-knob-lfo-2"></div>
-								</div>
-							</div>
-						</div>
-						<div class="amount">
-							<div class="knob-label-wrapper">
-								<span class="text text-normal">AMOUNT</span>
-								<div class="knob-big knob-container">
-									<div class="knob" id="amount-knob-lfo-2"></div>
-								</div>
-							</div>
-						</div>
-					</div>
-					<div class="sync">
-						<span class="text text-big">Sync</span>
-						<button class="light-up-button" id="light-up-button-lfo-2">
-							<span class="light-up"></span>
-						</button>
-					</div>
-					<label class="on-off">
-						<input type="checkbox" id="on-off-lfo-2" checked>
-						<span class="slider-on-off"></span>
-					</label>
-				</div>
-			</div>
-		</div>
-		<div id="keyboard-activator" class="keyboard-container panel">
-			<span class="text text-title"> KEYBOARD</span>
-		</div>
-	</div>
-</body>
-
+                            <div class="knob-label-wrapper">
+                                <span class="text text-normal">AMOUNT</span>
+                                <div class="knob-big knob-container">
+                                    <div
+                                        class="knob"
+                                        id="amount-knob-lfo-1"
+                                    ></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="keyboard-activator" class="keyboard-container panel">
+                <span class="text text-title"> KEYBOARD</span>
+            </div>
+        </div>
+    </body>
 </html>
