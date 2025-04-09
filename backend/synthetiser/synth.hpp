@@ -3,6 +3,7 @@
 
 #include "../sound_player/sound_player.hpp"
 #include "../utils/note_map.hpp"
+#include "low_frequency_oscillator/low_frequency_oscillator.hpp"
 #include "operator/operator.hpp"
 #include <alsa/asoundlib.h>
 #include <functional>
@@ -13,6 +14,7 @@ class Synth {
 private:
   SoundPlayer *async_player;
   Operator synth_operator;
+  LowFrequencyOscillator lfo_1;
   std::function<size_t(std::vector<std::string> *)> selectDeviceCallback;
 
 public:
@@ -21,6 +23,7 @@ public:
   void start_keyboard(NoteMap *nm, std::mutex *map_mutex);
   void updateOperator(size_t operator_index, std::string operator_field,
                       double value);
+  void updateLFO(size_t lfo_index, std::string lfo_field, double value);
 };
 
 #endif

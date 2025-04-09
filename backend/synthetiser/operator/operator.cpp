@@ -4,9 +4,10 @@
 #include <vector>
 
 Operator::Operator(size_t numberOfVoices, float amplitude,
-                   EnvelopeADSR envelope, Waveform waveform)
+                   EnvelopeADSR envelope, Waveform waveform,
+                   LowFrequencyOscillator *lfo_1)
     : numberOfVoices(numberOfVoices), amplitude(amplitude), envelope(envelope),
-      waveform(waveform) {
+      waveform(waveform), lfo_1(lfo_1) {
   set_number_of_voices(numberOfVoices);
 }
 
@@ -40,12 +41,20 @@ void Operator::updateFrequency(size_t index, double note) {
   oscs[index].noteOn();
 }
 
+void Operator::setLFO1Enabled(bool enabled) {
+  lfo1Multiplier = enabled ? 1.0f : 0.0f;
+}
+
 float Operator::advance() {
   float sum = 0;
   for (auto it = oscs.begin(); it != oscs.end(); ++it) {
     sum += it->advance();
   }
-  return sum;
+  float lfo1 = lfo_1->advance();
+
+  float mod1 = lfo1Multiplier * lfo1 + (1.0f - lfo1Multiplier);
+
+  return sum * mod1;
 }
 
 void Operator::releaseNote(size_t index) { oscs[index].noteOff(); }

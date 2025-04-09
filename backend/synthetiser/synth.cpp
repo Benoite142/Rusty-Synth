@@ -2,13 +2,17 @@
 #include "../utils/note_map.hpp"
 #include "constants.h"
 #include "envelope/envelope.hpp"
+#include "low_frequency_oscillator/low_frequency_oscillator.hpp"
 #include "operator/operator.hpp"
 #include "oscillator/oscillator.hpp"
+#include <cstddef>
 #include <iostream>
+#include <string>
 
 Synth::Synth(
     std::function<size_t(std::vector<std::string> *)> selectDeviceCallback)
-    : synth_operator{2, 0.5f, EnvelopeADSR{}, Waveform::SQUARE} {
+    : lfo_1(5, Waveform::SINE, 0.3),
+      synth_operator{2, 0.5f, EnvelopeADSR{}, Waveform::SQUARE, &lfo_1} {
   this->selectDeviceCallback = selectDeviceCallback;
 }
 
@@ -43,6 +47,24 @@ void Synth::updateOperator(size_t operator_index, std::string operator_field,
   }
   if (operator_field.compare("release") == 0) {
     synth_operator.updateRelease(value);
+    return;
+  }
+  if (operator_field.compare("link-lfo") == 0) {
+    synth_operator.setLFO1Enabled(value);
+    return;
+  }
+}
+
+void Synth::updateLFO(size_t lfo_index, std::string lfo_field, double value) {
+
+  std::cout << "tried to update lfo " << lfo_index << "'s " << lfo_field
+            << " with" << value << std::endl;
+  if (lfo_field.compare("amout") == 0) {
+    lfo_1.setAmplitudeAmount(value);
+    return;
+  }
+  if (lfo_field.compare("rate") == 0) {
+    lfo_1.setFrequencyRate(value);
     return;
   }
 }
