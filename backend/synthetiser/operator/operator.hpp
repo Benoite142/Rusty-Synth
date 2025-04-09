@@ -13,14 +13,11 @@ private:
   EnvelopeADSR envelope;
   Waveform waveform;
   LowFrequencyOscillator *lfo_1;
-  LowFrequencyOscillator *lfo_2;
   float lfo1Multiplier = 1.0f;
-  float lfo2Multiplier = 1.0f;
 
 public:
   Operator(size_t numberOfVoices, float amplitude, EnvelopeADSR envelope,
-           Waveform waveform, LowFrequencyOscillator *lfo_1,
-           LowFrequencyOscillator *lfo_2);
+           Waveform waveform, LowFrequencyOscillator *lfo_1);
   void set_operator_amplitude(float amplitude);
   size_t getNumberOfVoices();
   void set_number_of_voices(size_t numberOfVoices);
@@ -33,7 +30,6 @@ public:
   void updateSustain(double value);
   void updateRelease(double value);
   void setLFO1Enabled(bool enabled);
-  void setLFO2Enabled(bool enabled);
 };
 
 #endif

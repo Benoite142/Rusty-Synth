@@ -15,7 +15,6 @@ private:
   SoundPlayer *async_player;
   Operator synth_operator;
   LowFrequencyOscillator lfo_1;
-  LowFrequencyOscillator lfo_2;
   std::function<size_t(std::vector<std::string> *)> selectDeviceCallback;
 
 public:
@@ -24,6 +23,7 @@ public:
   void start_keyboard(NoteMap *nm, std::mutex *map_mutex);
   void updateOperator(size_t operator_index, std::string operator_field,
                       double value);
+  void updateLFO(size_t lfo_index, std::string lfo_field, double value);
 };
 
 #endif

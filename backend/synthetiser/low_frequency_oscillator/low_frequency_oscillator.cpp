@@ -14,13 +14,15 @@ void LowFrequencyOscillator::setWaveForm(Waveform newWaveform) {
 }
 
 void LowFrequencyOscillator::setFrequencyRate(float new_freq) {
-  frequency = new_freq;
+  // max lfo rate to 5
+  frequency = new_freq * 5;
   offset_sine_square = 2 * PI * (frequency / SAMPLE_RATE);
   offset_triangle_saw = frequency / SAMPLE_RATE;
 }
 
 void LowFrequencyOscillator::setAmplitudeAmount(float new_amp) {
-  amplitude = new_amp;
+  // max amount to 0.5
+  amplitude = new_amp * 0.5;
 }
 
 float LowFrequencyOscillator::advance() {

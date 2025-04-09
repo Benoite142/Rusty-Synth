@@ -3,6 +3,7 @@
 #include "../midi/midi_setup.hpp"
 #include <functional>
 #include <iostream>
+#include <string>
 
 std::vector<std::string> split_string(std::string str, char splitting_char) {
   std::vector<std::string> splitted;
@@ -52,7 +53,13 @@ void GlobalController::handleMessageReception(std::string message) {
     std::vector<std::string> message_parts = split_string(message, ' ');
     synth.updateOperator(std::stoi(message_parts[1]), message_parts[2],
                          std::stod(message_parts[3]));
-  } else {
+  } else if (message.substr(0, 3).compare("lfo") == 0) {
+    std::vector<std::string> message_parts = split_string(message, ' ');
+    synth.updateLFO(std::stoi(message_parts[1]), message_parts[2],
+                    std::stod(message_parts[3]));
+  }
+
+  else {
     std::cout << "message received does not match any " << message << std::endl;
     messager.sendMessage(message.append(" from server ;)"));
   }
