@@ -6,6 +6,7 @@
 #include <alsa/error.h>
 #include <alsa/global.h>
 #include <alsa/pcm.h>
+#include <fstream>
 #include <iostream>
 #include <unistd.h>
 
@@ -195,6 +196,8 @@ void SoundPlayer::playAsync(float *buffer, Operator *synth_operator,
       .synth_operator = synth_operator,
       .note_map = note_map,
       .map_mutex = map_mutex,
+      .recording = &temp_output_buffer,
+      .is_recording = &is_recording,
   };
   error = snd_async_add_pcm_handler(&ahandler, handle, async_player_callback,
                                     &data);
@@ -254,4 +257,14 @@ void SoundPlayer::playAsync(float *buffer, Operator *synth_operator,
 
   snd_pcm_drain(handle);
   snd_pcm_close(handle);
+}
+
+void SoundPlayer::startRecording() {
+  temp_output_buffer.open(".tmp_recording");
+  is_recording = true;
+}
+
+void SoundPlayer::stopRecording() {
+  is_recording = false;
+  temp_output_buffer.close();
 }

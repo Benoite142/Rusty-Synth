@@ -4,6 +4,8 @@
 #include "../synthetiser/operator/operator.hpp"
 #include "../utils/note_map.hpp"
 #include <alsa/asoundlib.h>
+#include <atomic>
+#include <fstream>
 #include <functional>
 #include <mutex>
 #include <string>
@@ -17,12 +19,16 @@ private:
   int bitDepth;
   int latency;
   int numChannelsRunning;
+  std::atomic<bool> is_recording;
+  std::ofstream temp_output_buffer;
 
 public:
   SoundPlayer(
       std::function<size_t(std::vector<std::string> *)> selectDeviceCallback);
   void playAsync(float *buffer, Operator *synth_operator, NoteMap *note_map,
                  std::mutex *map_mutex);
+  void startRecording();
+  void stopRecording();
 
 private:
   void setup_pipe();

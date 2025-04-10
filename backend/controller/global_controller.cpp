@@ -57,9 +57,12 @@ void GlobalController::handleMessageReception(std::string message) {
     std::vector<std::string> message_parts = split_string(message, ' ');
     synth.updateLFO(std::stoi(message_parts[1]), message_parts[2],
                     std::stod(message_parts[3]));
-  }
-
-  else {
+  } else if (message.compare("start-recording") == 0) {
+    synth.startRecording();
+  } else if (message.compare("stop-recording") == 0) {
+    synth.stopRecording();
+    wav_writer.writeWav();
+  } else {
     std::cout << "message received does not match any " << message << std::endl;
     messager.sendMessage(message.append(" from server ;)"));
   }
@@ -75,7 +78,8 @@ GlobalController::GlobalController()
     : synth{std::bind(&GlobalController::selectDevice, this,
                       std::placeholders::_1)},
       sniffer{}, messager{std::bind(&GlobalController::handleMessageReception,
-                                    this, std::placeholders::_1)} {}
+                                    this, std::placeholders::_1)},
+      wav_writer{} {}
 
 void GlobalController::startRunning() {
   std::atomic_bool sniffer_failed = false, midi_synth_failed = false,

@@ -24,6 +24,8 @@ public:
   void updateOperator(size_t operator_index, std::string operator_field,
                       double value);
   void updateLFO(size_t lfo_index, std::string lfo_field, double value);
+  void startRecording();
+  void stopRecording();
 };
 
 #endif
