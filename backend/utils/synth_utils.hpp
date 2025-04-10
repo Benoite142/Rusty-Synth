@@ -5,6 +5,8 @@
 #include "../synthetiser/oscillator/oscillator.hpp"
 #include "note_map.hpp"
 #include <alsa/asoundlib.h>
+#include <atomic>
+#include <fstream>
 #include <mutex>
 #include <string>
 #include <vector>
@@ -17,6 +19,8 @@ struct private_data {
   Operator *synth_operator;
   NoteMap *note_map;
   std::mutex *map_mutex;
+  std::ofstream *recording;
+  std::atomic<bool> *is_recording;
 };
 
 void async_player_callback(snd_async_handler_t *ahandler);

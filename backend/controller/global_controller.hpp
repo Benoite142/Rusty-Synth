@@ -4,6 +4,7 @@
 #include "../keyboard_sniffer/sniffer.hpp"
 #include "../messager/messager.hpp"
 #include "../synthetiser/synth.hpp"
+#include "../wav_writer/wav_writer.hpp"
 #include <condition_variable>
 #include <mutex>
 
@@ -19,6 +20,7 @@ private:
   Synth synth;
   size_t selected_id;
   Messager messager;
+  WavWriter wav_writer;
 
 public:
   GlobalController();

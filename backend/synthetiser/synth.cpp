@@ -68,3 +68,7 @@ void Synth::updateLFO(size_t lfo_index, std::string lfo_field, double value) {
     return;
   }
 }
+
+void Synth::startRecording() { async_player->startRecording(); }
+
+void Synth::stopRecording() { async_player->stopRecording(); }

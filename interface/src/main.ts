@@ -32,7 +32,7 @@ const createMainWindow = (): BrowserWindow => {
 app.whenReady().then(() => {
   const win = createMainWindow();
 
-  const connectionHandler = new ConnectionHandler(win);
+  const connectionHandler = new ConnectionHandler(win, () => { app.quit(); });
 
   const windowMenu: Electron.MenuItemConstructorOptions[] = [
     {

@@ -50,6 +50,10 @@ void async_player_callback(snd_async_handler_t *ahandler) {
       buffer[i] /= data->synth_operator->getNumberOfVoices();
     }
     error = snd_pcm_writei(handle, buffer, BUFFER_SIZE);
+    if (*data->is_recording) {
+      data->recording->write(reinterpret_cast<char *>(buffer),
+                             BUFFER_SIZE * sizeof(float));
+    }
 
     if (error < 0) {
       std::cout << "error in callback write " << snd_strerror(error)

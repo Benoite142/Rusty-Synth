@@ -7,7 +7,7 @@ export class ConnectionHandler {
 	private isCollectingDeviceNames = false;
 	private firstMessage = true;
 
-	public constructor(window: BrowserWindow) {
+	public constructor(window: BrowserWindow, onErr: () => void) {
 		const socket = createConnection({ port: 8000, host: 'localhost' }, () => { });
 
 		const deviceNames: string[] = [];
@@ -56,6 +56,7 @@ export class ConnectionHandler {
 		socket.on('error', (err) => {
 			console.log('error with socket', err);
 			socket.end();
+			onErr();
 		});
 
 		this.client = socket;

@@ -53,6 +53,7 @@ void Messager::startReceivingMessages(tcp::socket *connection_socket) {
                                 std::size_t bytes_read) {
         if (error == boost::asio::error::eof) {
           std::cout << "connection closed from the client\n";
+          exit(0);
           return;
         }
 
@@ -62,9 +63,7 @@ void Messager::startReceivingMessages(tcp::socket *connection_socket) {
         }
 
         std::string read_value{read_buffer.data(), bytes_read};
-
         message_reception_callback(read_value);
-
         // when we finish current job, queue another read
         startReceivingMessages(connection_socket);
       });
