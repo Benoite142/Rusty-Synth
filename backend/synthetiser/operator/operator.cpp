@@ -1,13 +1,17 @@
 #include "operator.hpp"
+#include "../filters/filters.hpp"
 #include <cstddef>
 #include <iostream>
 #include <vector>
 
 Operator::Operator(size_t numberOfVoices, float amplitude,
                    EnvelopeADSR envelope, Waveform waveform,
-                   LowFrequencyOscillator *lfo_1)
+                   LowFrequencyOscillator *lfo_1,
+                   LowPassFilter *low_pass_filter,
+                   HighPassFilter *high_pass_filter)
     : numberOfVoices(numberOfVoices), amplitude(amplitude), envelope(envelope),
-      waveform(waveform), lfo_1(lfo_1) {
+      waveform(waveform), lfo_1(lfo_1), low_pass_filter(low_pass_filter),
+      high_pass_filter(high_pass_filter) {
   set_number_of_voices(numberOfVoices);
 }
 
@@ -51,10 +55,12 @@ float Operator::advance() {
     sum += it->advance();
   }
   float lfo1 = lfo_1->advance();
-
+  // apply lfo
   float mod1 = lfo1Multiplier * lfo1 + (1.0f - lfo1Multiplier);
-
-  return sum * mod1;
+  // apply low pass filter
+  float audio_signal = low_pass_filter->process(sum * mod1);
+  // apply high pass filter
+  return high_pass_filter->process(audio_signal);
 }
 
 void Operator::releaseNote(size_t index) { oscs[index].noteOff(); }

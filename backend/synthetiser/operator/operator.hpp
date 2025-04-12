@@ -1,5 +1,6 @@
 #ifndef OPERATOR_HPP
 #define OPERATOR_HPP
+#include "../filters/filters.hpp"
 #include "../low_frequency_oscillator/low_frequency_oscillator.hpp"
 #include "../oscillator/oscillator.hpp"
 #include <cstddef>
@@ -14,10 +15,13 @@ private:
   Waveform waveform;
   LowFrequencyOscillator *lfo_1;
   float lfo1Multiplier = 1.0f;
+  LowPassFilter *low_pass_filter;
+  HighPassFilter *high_pass_filter;
 
 public:
   Operator(size_t numberOfVoices, float amplitude, EnvelopeADSR envelope,
-           Waveform waveform, LowFrequencyOscillator *lfo_1);
+           Waveform waveform, LowFrequencyOscillator *lfo_1,
+           LowPassFilter *low_pass_filter, HighPassFilter *high_pass_filter);
   void set_operator_amplitude(float amplitude);
   size_t getNumberOfVoices();
   void set_number_of_voices(size_t numberOfVoices);

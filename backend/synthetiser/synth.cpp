@@ -2,6 +2,7 @@
 #include "../utils/note_map.hpp"
 #include "constants.h"
 #include "envelope/envelope.hpp"
+#include "filters/filters.hpp"
 #include "low_frequency_oscillator/low_frequency_oscillator.hpp"
 #include "operator/operator.hpp"
 #include "oscillator/oscillator.hpp"
@@ -11,8 +12,14 @@
 
 Synth::Synth(
     std::function<size_t(std::vector<std::string> *)> selectDeviceCallback)
-    : lfo_1(5, Waveform::SINE, 0.3),
-      synth_operator{2, 0.5f, EnvelopeADSR{}, Waveform::SQUARE, &lfo_1} {
+    : lfo_1(5, Waveform::SINE, 0.3), low_pass_filter(10000.0f),
+      high_pass_filter(5000.0f), synth_operator{2,
+                                                0.5f,
+                                                EnvelopeADSR{},
+                                                Waveform::SQUARE,
+                                                &lfo_1,
+                                                &low_pass_filter,
+                                                &high_pass_filter} {
   this->selectDeviceCallback = selectDeviceCallback;
 }
 
@@ -59,7 +66,7 @@ void Synth::updateLFO(size_t lfo_index, std::string lfo_field, double value) {
 
   std::cout << "tried to update lfo " << lfo_index << "'s " << lfo_field
             << " with" << value << std::endl;
-  if (lfo_field.compare("amout") == 0) {
+  if (lfo_field.compare("amount") == 0) {
     lfo_1.setAmplitudeAmount(value);
     return;
   }
@@ -72,3 +79,15 @@ void Synth::updateLFO(size_t lfo_index, std::string lfo_field, double value) {
 void Synth::startRecording() { async_player->startRecording(); }
 
 void Synth::stopRecording() { async_player->stopRecording(); }
+
+void Synth::updateLowPassFilter(double value) {
+  std::cout << "tried to update lp filter " << " with" << value << std::endl;
+  low_pass_filter.setCutoff(value);
+  return;
+}
+
+void Synth::updateHighPassFilter(double value) {
+  std::cout << "tried to update lp filter " << " with" << value << std::endl;
+  high_pass_filter.setCutoff(value);
+  return;
+}

@@ -3,6 +3,7 @@
 
 #include "../sound_player/sound_player.hpp"
 #include "../utils/note_map.hpp"
+#include "filters/filters.hpp"
 #include "low_frequency_oscillator/low_frequency_oscillator.hpp"
 #include "operator/operator.hpp"
 #include <alsa/asoundlib.h>
@@ -15,6 +16,8 @@ private:
   SoundPlayer *async_player;
   Operator synth_operator;
   LowFrequencyOscillator lfo_1;
+  HighPassFilter high_pass_filter;
+  LowPassFilter low_pass_filter;
   std::function<size_t(std::vector<std::string> *)> selectDeviceCallback;
 
 public:
@@ -26,6 +29,8 @@ public:
   void updateLFO(size_t lfo_index, std::string lfo_field, double value);
   void startRecording();
   void stopRecording();
+  void updateLowPassFilter(double value);
+  void updateHighPassFilter(double value);
 };
 
 #endif

@@ -62,7 +62,13 @@ void GlobalController::handleMessageReception(std::string message) {
   } else if (message.compare("stop-recording") == 0) {
     synth.stopRecording();
     wav_writer.writeWav();
-  } else {
+  } else if (message.substr(0, 3).compare("lpf") == 0) {
+    synth.updateLowPassFilter(std::stod(split_string(message, ' ')[1]));
+  } else if (message.substr(0, 3).compare("hpf") == 0) {
+    synth.updateHighPassFilter(std::stod(split_string(message, ' ')[1]));
+  }
+
+  else {
     std::cout << "message received does not match any " << message << std::endl;
     messager.sendMessage(message.append(" from server ;)"));
   }
