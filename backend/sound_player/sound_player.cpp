@@ -188,12 +188,18 @@ void SoundPlayer::setup_pipe() {
 }
 
 void SoundPlayer::playAsync(float *buffer, Operator *synth_operator,
-                            NoteMap *note_map, std::mutex *map_mutex) {
+                            Operator *synth_operator2,
+                            Operator *synth_operator3,
+                            Operator *synth_operator4, NoteMap *note_map,
+                            std::mutex *map_mutex) {
   int error = 0;
   setup_pipe();
   private_data data{
       .buffer = buffer,
       .synth_operator = synth_operator,
+      .synth_operator2 = synth_operator2,
+      .synth_operator3 = synth_operator3,
+      .synth_operator4 = synth_operator4,
       .note_map = note_map,
       .map_mutex = map_mutex,
       .recording = &temp_output_buffer,
@@ -213,6 +219,9 @@ void SoundPlayer::playAsync(float *buffer, Operator *synth_operator,
 
     auto note = calculate_frequency(note_map->notes[i].note_value);
     synth_operator->updateFrequency(i, note);
+    synth_operator2->updateFrequency(i, note);
+    synth_operator3->updateFrequency(i, note);
+    synth_operator4->updateFrequency(i, note);
 
     *note_map->has_updated_value = false;
     map_mutex->unlock();

@@ -41,7 +41,6 @@ float LowFrequencyOscillator::advance() {
 }
 
 float LowFrequencyOscillator::advance_sine() {
-  sine_angle += offset_sine_square;
 
   while (sine_angle >= 2 * PI) {
     sine_angle -= 2 * PI;
@@ -54,7 +53,6 @@ float LowFrequencyOscillator::advance_sine() {
   return -amplitude * std::sin(sine_angle) + (1 - amplitude);
 }
 float LowFrequencyOscillator::advance_saw() {
-  saw_angle += offset_triangle_saw;
   while (saw_angle > 1.0f) {
     saw_angle -= 1.0f;
   }
@@ -65,7 +63,6 @@ float LowFrequencyOscillator::advance_saw() {
 }
 float LowFrequencyOscillator::advance_square() {
 
-  square_angle += offset_sine_square;
   while (square_angle >= 2 * (float)PI)
     square_angle -= 2 * (float)PI;
 
@@ -77,7 +74,6 @@ float LowFrequencyOscillator::advance_square() {
     return amplitude - (1 + amplitude);
 }
 float LowFrequencyOscillator::advance_triangle() {
-  triangle_angle += offset_triangle_saw;
   while (triangle_angle > 1.0f) {
     triangle_angle -= 1.0f;
   }
@@ -91,4 +87,14 @@ float LowFrequencyOscillator::advance_triangle() {
     ret = (1.0f - triangle_angle) * 2;
 
   return -amplitude * ((ret * 2.0f) - 1.0f) + (1 - amplitude);
+}
+
+void LowFrequencyOscillator::advance_angle() {
+  sine_angle += offset_sine_square;
+
+  triangle_angle += offset_triangle_saw;
+
+  saw_angle += offset_triangle_saw;
+
+  square_angle += offset_sine_square;
 }

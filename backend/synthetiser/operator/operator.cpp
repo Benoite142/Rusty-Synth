@@ -57,11 +57,15 @@ float Operator::advance() {
   float lfo1 = lfo_1->advance();
   // apply lfo
   float mod1 = lfo1Multiplier * lfo1 + (1.0f - lfo1Multiplier);
+  return sum * mod1;
+}
+float Operator::process(float sample) {
   // apply low pass filter
-  float audio_signal = low_pass_filter->process(sum * mod1);
+  float audio_signal = low_pass_filter->process(sample);
   // apply high pass filter
   return high_pass_filter->process(audio_signal);
 }
+void Operator::advanceLFO() { lfo_1->advance_angle(); }
 
 void Operator::releaseNote(size_t index) { oscs[index].noteOff(); }
 
