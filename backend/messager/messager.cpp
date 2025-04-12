@@ -61,7 +61,6 @@ void Messager::startReceivingMessages(tcp::socket *connection_socket) {
           std::cout << "error reading: " << error.message() << std::endl;
           return;
         }
-
         std::string read_value{read_buffer.data(), bytes_read};
         message_reception_callback(read_value);
         // when we finish current job, queue another read

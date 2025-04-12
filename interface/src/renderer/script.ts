@@ -434,12 +434,12 @@ window.onload = () => {
 
     if (high_pass_knob)
         attachKnobListener(high_pass_knob, (value: number) => {
-            window.electronAPI.sendMessage(`high-pass ${value}`);
+            window.electronAPI.sendMessage(`hpf ${value}`);
         });
 
     if (low_pass_knob)
         attachKnobListener(low_pass_knob, (value: number) => {
-            window.electronAPI.sendMessage(`low-pass ${value}`);
+            window.electronAPI.sendMessage(`lpf ${value}`);
         });
 
     if (main_volume)
