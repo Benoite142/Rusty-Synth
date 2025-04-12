@@ -25,7 +25,9 @@ private:
 public:
   SoundPlayer(
       std::function<size_t(std::vector<std::string> *)> selectDeviceCallback);
-  void playAsync(float *buffer, Operator *synth_operator, NoteMap *note_map,
+  void playAsync(float *buffer, Operator *synth_operator,
+                 Operator *synth_operator2, Operator *synth_operator3,
+                 Operator *synth_operator4, NoteMap *note_map,
                  std::mutex *map_mutex);
   void startRecording();
   void stopRecording();

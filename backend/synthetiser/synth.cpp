@@ -12,14 +12,20 @@
 
 Synth::Synth(
     std::function<size_t(std::vector<std::string> *)> selectDeviceCallback)
-    : lfo_1(5, Waveform::SINE, 0.3), low_pass_filter(10000.0f),
-      high_pass_filter(5000.0f), synth_operator{2,
-                                                0.5f,
-                                                EnvelopeADSR{},
-                                                Waveform::SQUARE,
-                                                &lfo_1,
-                                                &low_pass_filter,
-                                                &high_pass_filter} {
+    : lfo_1(5, Waveform::SINE, 0.3), numberOfVoices(2),
+      low_pass_filter(10000.0f), high_pass_filter(5000.0f),
+      synth_operator{numberOfVoices,   0.5f,   EnvelopeADSR{},
+                     Waveform::SQUARE, &lfo_1, &low_pass_filter,
+                     &high_pass_filter},
+      synth_operator2{numberOfVoices,   0.5f,   EnvelopeADSR{},
+                      Waveform::SAW,    &lfo_1, &low_pass_filter,
+                      &high_pass_filter},
+      synth_operator3{numberOfVoices,     0.5f,   EnvelopeADSR{},
+                      Waveform::TRIANGLE, &lfo_1, &low_pass_filter,
+                      &high_pass_filter},
+      synth_operator4{numberOfVoices,   0.5f,   EnvelopeADSR{},
+                      Waveform::SINE,   &lfo_1, &low_pass_filter,
+                      &high_pass_filter} {
   this->selectDeviceCallback = selectDeviceCallback;
 }
 
@@ -30,7 +36,8 @@ void Synth::start_keyboard(NoteMap *nm, std::mutex *map_mutex) {
   float buffer[BUFFER_SIZE];
 
   // playing in async mode still uses up a thread
-  async_player->playAsync(buffer, &synth_operator, nm, map_mutex);
+  async_player->playAsync(buffer, &synth_operator, &synth_operator2,
+                          &synth_operator3, &synth_operator4, nm, map_mutex);
 
   // for now asserting here since we should never reach
   assert(false);
@@ -90,4 +97,9 @@ void Synth::updateHighPassFilter(double value) {
   std::cout << "tried to update lp filter " << " with" << value << std::endl;
   high_pass_filter.setCutoff(value);
   return;
+}
+
+void Synth::setNumberOfVoices(size_t newNumberOfVoices) {
+
+  numberOfVoices = newNumberOfVoices;
 }

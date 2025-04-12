@@ -35,15 +35,28 @@ void async_player_callback(snd_async_handler_t *ahandler) {
           auto freq = calculate_frequency(note.note_value);
 
           data->synth_operator->updateFrequency(i, freq);
+          data->synth_operator2->updateFrequency(i, freq);
+          data->synth_operator3->updateFrequency(i, freq);
+          data->synth_operator4->updateFrequency(i, freq);
         } else {
           data->synth_operator->releaseNote(i);
+          data->synth_operator2->releaseNote(i);
+          data->synth_operator3->releaseNote(i);
+          data->synth_operator4->releaseNote(i);
         }
       }
     }
     data->map_mutex->unlock();
 
     for (int i = 0; i < BUFFER_SIZE; ++i) {
-      buffer[i] = data->synth_operator->advance();
+      data->synth_operator->advanceLFO();
+      float mixed_sample = 0.0f;
+      mixed_sample += data->synth_operator->advance();
+      mixed_sample += data->synth_operator2->advance();
+      mixed_sample += data->synth_operator3->advance();
+      mixed_sample += data->synth_operator4->advance();
+      mixed_sample = data->synth_operator->process(mixed_sample);
+      buffer[i] = mixed_sample * 0.25f;
       // so the notes dont clip with themeselves
       // might need to find a better way to do this
 

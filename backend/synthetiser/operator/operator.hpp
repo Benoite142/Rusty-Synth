@@ -34,6 +34,8 @@ public:
   void updateSustain(double value);
   void updateRelease(double value);
   void setLFO1Enabled(bool enabled);
+  float process(float sample);
+  void advanceLFO();
 };
 
 #endif

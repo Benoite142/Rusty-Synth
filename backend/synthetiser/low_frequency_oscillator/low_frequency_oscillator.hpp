@@ -26,6 +26,7 @@ public:
   void setWaveForm(Waveform newWaveform);
   void setFrequencyRate(float new_freq);
   void setAmplitudeAmount(float new_amp);
+  void advance_angle();
 };
 
 #endif
