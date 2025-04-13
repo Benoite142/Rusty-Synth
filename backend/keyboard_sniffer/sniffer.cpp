@@ -85,6 +85,7 @@ int KeyboardSniffer::sniff(NoteMap *note_map, std::mutex *note_map_lock) {
         if (it == note_map->notes.end() || it->released) {
           note_map->notes[idx++ % note_map->notes.size()] = {
               .note_value = midi_note, .released = false};
+          note_map->current_voices++;
           *note_map->has_updated_value = true;
         }
         note_map_lock->unlock();
@@ -96,6 +97,7 @@ int KeyboardSniffer::sniff(NoteMap *note_map, std::mutex *note_map_lock) {
       auto it = std::find(note_map->notes.begin(), note_map->notes.end(),
                           Note{.note_value = midi_note});
       note_map_lock->lock();
+      note_map->current_voices--;
       if (it != note_map->notes.end()) {
         it->released = true;
         *note_map->has_updated_value = true;

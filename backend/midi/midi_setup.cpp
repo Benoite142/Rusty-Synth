@@ -46,6 +46,7 @@ void MidiSetup::midiSniffer(NoteMap *note_map, std::mutex *note_map_lock) {
 
         if (it == note_map->notes.end() || !it->released) {
           note_map->notes[idx++ % 2] = {.note_value = note, .released = false};
+          note_map->current_voices++;
           *note_map->has_updated_value = true;
         }
 
@@ -59,6 +60,7 @@ void MidiSetup::midiSniffer(NoteMap *note_map, std::mutex *note_map_lock) {
                             Note{.note_value = note});
         if (it != note_map->notes.end()) {
           it->released = true;
+          note_map->current_voices--;
           *note_map->has_updated_value = true;
         }
         note_map_lock->unlock();

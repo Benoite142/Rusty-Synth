@@ -11,8 +11,8 @@ private:
   double releaseTime;      // release knob
 
 public:
-  EnvelopeADSR(double attackTime = 1.6, double decayTime = 1.5,
-               double sustainAmplitude = 0.5, double releaseTime = 1.5);
+  EnvelopeADSR(double attackTime = 0.01, double decayTime = 0.01,
+               double sustainAmplitude = 0.5, double releaseTime = 0.01);
   double getAttackTime();
   double getDecayTime();
   double getSustainAmplitude();

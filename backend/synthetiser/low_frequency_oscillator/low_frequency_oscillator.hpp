@@ -20,8 +20,7 @@ private:
   float advance_triangle();
 
 public:
-  LowFrequencyOscillator(float freqAmount, Waveform wave,
-                         float amplitudeAmount);
+  LowFrequencyOscillator(float freq, Waveform wave, float amplitude);
   float advance();
   void setWaveForm(Waveform newWaveform);
   void setFrequencyRate(float new_freq);

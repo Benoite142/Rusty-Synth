@@ -2,6 +2,7 @@
 #include "../synthetiser/constants.h"
 #include "note_map.hpp"
 #include "sound_conversions.hpp"
+#include <cstddef>
 #include <iostream>
 
 void writeDataToBuffer(std::vector<float> *buffer, Oscillator *osc,
@@ -46,6 +47,7 @@ void async_player_callback(snd_async_handler_t *ahandler) {
         }
       }
     }
+    size_t temp_voices = data->note_map->current_voices;
     data->map_mutex->unlock();
 
     for (int i = 0; i < BUFFER_SIZE; ++i) {
@@ -60,7 +62,7 @@ void async_player_callback(snd_async_handler_t *ahandler) {
       // so the notes dont clip with themeselves
       // might need to find a better way to do this
 
-      buffer[i] /= data->synth_operator->getNumberOfVoices();
+      buffer[i] /= 2; // temp_voices;
     }
     error = snd_pcm_writei(handle, buffer, BUFFER_SIZE);
     if (*data->is_recording) {

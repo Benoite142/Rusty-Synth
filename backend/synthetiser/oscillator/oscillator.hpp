@@ -33,6 +33,7 @@ public:
   void noteOn();
   void noteOff();
   void setWaveform(Waveform newWaveform);
+  void setPeakAmplitude(float peak_amplitude);
 };
 
 #endif

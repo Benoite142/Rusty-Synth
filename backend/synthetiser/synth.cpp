@@ -1,31 +1,27 @@
 #include "synth.hpp"
 #include "../utils/note_map.hpp"
 #include "constants.h"
-#include "envelope/envelope.hpp"
 #include "filters/filters.hpp"
 #include "low_frequency_oscillator/low_frequency_oscillator.hpp"
 #include "operator/operator.hpp"
 #include "oscillator/oscillator.hpp"
+#include <boost/asio/error.hpp>
 #include <cstddef>
 #include <iostream>
 #include <string>
 
 Synth::Synth(
     std::function<size_t(std::vector<std::string> *)> selectDeviceCallback)
-    : lfo_1(5, Waveform::SINE, 0.3), numberOfVoices(2),
-      low_pass_filter(10000.0f), high_pass_filter(5000.0f),
-      synth_operator{numberOfVoices,   0.5f,   EnvelopeADSR{},
-                     Waveform::SQUARE, &lfo_1, &low_pass_filter,
-                     &high_pass_filter},
-      synth_operator2{numberOfVoices,   0.5f,   EnvelopeADSR{},
-                      Waveform::SAW,    &lfo_1, &low_pass_filter,
-                      &high_pass_filter},
-      synth_operator3{numberOfVoices,     0.5f,   EnvelopeADSR{},
-                      Waveform::TRIANGLE, &lfo_1, &low_pass_filter,
-                      &high_pass_filter},
-      synth_operator4{numberOfVoices,   0.5f,   EnvelopeADSR{},
-                      Waveform::SINE,   &lfo_1, &low_pass_filter,
-                      &high_pass_filter} {
+    : lfo_1(0, Waveform::SINE, 0), numberOfVoices(2), low_pass_filter(0),
+      high_pass_filter(MIN_CUTOFF),
+      synth_operators{{numberOfVoices, 0.5f, Waveform::SINE, &lfo_1,
+                       &low_pass_filter, &high_pass_filter},
+                      {numberOfVoices, 0.0f, Waveform::SINE, &lfo_1,
+                       &low_pass_filter, &high_pass_filter},
+                      {numberOfVoices, 0.0f, Waveform::SINE, &lfo_1,
+                       &low_pass_filter, &high_pass_filter},
+                      {numberOfVoices, 0.0f, Waveform::SINE, &lfo_1,
+                       &low_pass_filter, &high_pass_filter}} {
   this->selectDeviceCallback = selectDeviceCallback;
 }
 
@@ -36,49 +32,96 @@ void Synth::start_keyboard(NoteMap *nm, std::mutex *map_mutex) {
   float buffer[BUFFER_SIZE];
 
   // playing in async mode still uses up a thread
-  async_player->playAsync(buffer, &synth_operator, &synth_operator2,
-                          &synth_operator3, &synth_operator4, nm, map_mutex);
+  async_player->playAsync(buffer, synth_operators, &synth_operators[1],
+                          &synth_operators[2], &synth_operators[3], nm,
+                          map_mutex);
 
   // for now asserting here since we should never reach
   assert(false);
 }
 
 void Synth::updateOperator(size_t operator_index, std::string operator_field,
-                           double value) {
-  std::cout << "tried to update operator " << operator_index << "'s "
-            << operator_field << " with " << value << std::endl;
+                           std::variant<double, std::string> value) {
+  if (operator_field.compare("waveform") == 0) {
+    if (std::get<std::string>(value).compare("sine") == 0) {
+      synth_operators[operator_index].setWaveForm(Waveform::SINE);
+      return;
+    }
+
+    if (std::get<std::string>(value).compare("square") == 0) {
+      synth_operators[operator_index].setWaveForm(Waveform::SQUARE);
+      return;
+    }
+
+    if (std::get<std::string>(value).compare("saw") == 0) {
+      synth_operators[operator_index].setWaveForm(Waveform::SAW);
+      return;
+    }
+
+    if (std::get<std::string>(value).compare("triangle") == 0) {
+      synth_operators[operator_index].setWaveForm(Waveform::TRIANGLE);
+      return;
+    }
+  }
+
+  if (operator_field.compare("volume") == 0) {
+    synth_operators[operator_index].set_operator_amplitude(
+        std::get<double>(value));
+  }
+
   if (operator_field.compare("attack") == 0) {
-    synth_operator.updateAttack(value);
+    synth_operators[operator_index].updateAttack(5 * std::get<double>(value));
     return;
   }
   if (operator_field.compare("decay") == 0) {
-    synth_operator.updateDecay(value);
+    synth_operators[operator_index].updateDecay(2 * std::get<double>(value));
     return;
   }
   if (operator_field.compare("sustain") == 0) {
-    synth_operator.updateSustain(value);
+    synth_operators[operator_index].updateSustain(std::get<double>(value));
     return;
   }
   if (operator_field.compare("release") == 0) {
-    synth_operator.updateRelease(value);
+    synth_operators[operator_index].updateRelease(5 * std::get<double>(value));
     return;
   }
   if (operator_field.compare("link-lfo") == 0) {
-    synth_operator.setLFO1Enabled(value);
+    synth_operators[operator_index].setLFO1Enabled(std::get<double>(value));
     return;
   }
 }
 
-void Synth::updateLFO(size_t lfo_index, std::string lfo_field, double value) {
+void Synth::updateLFO(size_t lfo_index, std::string lfo_field,
+                      std::variant<double, std::string> value) {
 
-  std::cout << "tried to update lfo " << lfo_index << "'s " << lfo_field
-            << " with" << value << std::endl;
+  if (lfo_field.compare("waveform") == 0) {
+    if (std::get<std::string>(value).compare("sine") == 0) {
+      lfo_1.setWaveForm(Waveform::SINE);
+      return;
+    }
+
+    if (std::get<std::string>(value).compare("square") == 0) {
+      lfo_1.setWaveForm(Waveform::SQUARE);
+      return;
+    }
+
+    if (std::get<std::string>(value).compare("saw") == 0) {
+      lfo_1.setWaveForm(Waveform::SAW);
+      return;
+    }
+
+    if (std::get<std::string>(value).compare("triangle") == 0) {
+      lfo_1.setWaveForm(Waveform::TRIANGLE);
+      return;
+    }
+  }
+
   if (lfo_field.compare("amount") == 0) {
-    lfo_1.setAmplitudeAmount(value);
+    lfo_1.setAmplitudeAmount(std::get<double>(value));
     return;
   }
   if (lfo_field.compare("rate") == 0) {
-    lfo_1.setFrequencyRate(value);
+    lfo_1.setFrequencyRate(std::get<double>(value));
     return;
   }
 }
@@ -88,18 +131,16 @@ void Synth::startRecording() { async_player->startRecording(); }
 void Synth::stopRecording() { async_player->stopRecording(); }
 
 void Synth::updateLowPassFilter(double value) {
-  std::cout << "tried to update lp filter " << " with" << value << std::endl;
   low_pass_filter.setCutoff(value);
-  return;
 }
 
 void Synth::updateHighPassFilter(double value) {
-  std::cout << "tried to update lp filter " << " with" << value << std::endl;
   high_pass_filter.setCutoff(value);
-  return;
 }
 
-void Synth::setNumberOfVoices(size_t newNumberOfVoices) {
-
-  numberOfVoices = newNumberOfVoices;
+void Synth::setNumberOfVoices(size_t new_voices_number) {
+  numberOfVoices = new_voices_number;
+  for (int i = 0; i != 4; ++i) {
+    synth_operators[i].set_number_of_voices(new_voices_number);
+  }
 }

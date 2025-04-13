@@ -51,12 +51,22 @@ void GlobalController::handleMessageReception(std::string message) {
   } else if (message.substr(0, 2).compare("op") == 0) {
     // this means we have an update for an operator
     std::vector<std::string> message_parts = split_string(message, ' ');
-    synth.updateOperator(std::stoi(message_parts[1]), message_parts[2],
-                         std::stod(message_parts[3]));
+    if (message_parts[2].compare("waveform") == 0) {
+      synth.updateOperator(std::stoi(message_parts[1]) - 1, message_parts[2],
+                           message_parts[3]);
+    } else {
+      synth.updateOperator(std::stoi(message_parts[1]) - 1, message_parts[2],
+                           std::stod(message_parts[3]));
+    }
   } else if (message.substr(0, 3).compare("lfo") == 0) {
     std::vector<std::string> message_parts = split_string(message, ' ');
-    synth.updateLFO(std::stoi(message_parts[1]), message_parts[2],
-                    std::stod(message_parts[3]));
+    if (message_parts[2].compare("waveform") == 0) {
+      synth.updateLFO(std::stoi(message_parts[1]), message_parts[2],
+                      message_parts[3]);
+    } else {
+      synth.updateLFO(std::stoi(message_parts[1]), message_parts[2],
+                      std::stod(message_parts[3]));
+    }
   } else if (message.compare("start-recording") == 0) {
     synth.startRecording();
   } else if (message.compare("stop-recording") == 0) {
@@ -66,6 +76,12 @@ void GlobalController::handleMessageReception(std::string message) {
     synth.updateLowPassFilter(std::stod(split_string(message, ' ')[1]));
   } else if (message.substr(0, 3).compare("hpf") == 0) {
     synth.updateHighPassFilter(std::stod(split_string(message, ' ')[1]));
+  } else if (message.substr(0, 13).compare("number-voices") == 0) {
+    size_t voices = std::stoi(split_string(message, '-')[2]);
+    synth.setNumberOfVoices(voices);
+    note_map_mutex.lock();
+    updateNoteMapSize(&note_map, voices);
+    note_map_mutex.unlock();
   }
 
   else {
@@ -91,8 +107,7 @@ void GlobalController::startRunning() {
   std::atomic_bool sniffer_failed = false, midi_synth_failed = false,
                    keyboard_synth_failed = false, midi_setup_failed = false;
 
-  NoteMap note_map = makeEmptyNoteMap();
-  std::mutex note_map_mutex;
+  note_map = makeEmptyNoteMap();
 
   MidiSetup midi_input;
 
@@ -116,39 +131,37 @@ void GlobalController::startRunning() {
     messager.startContext(&comm_established_mutex, &comm_established);
   }};
 
-  std::thread sniffer_thread =
-      std::thread([this, &note_map, &note_map_mutex, &sniffer_failed]() {
-        if (sniffer.init() < 0) {
-          sniffer_failed = true;
-          return;
-        }
+  std::thread keyboard_sniffer_thread = std::thread([this, &sniffer_failed]() {
+    if (sniffer.init() < 0) {
+      sniffer_failed = true;
+      return;
+    }
 
-        while (true) {
-          waitForKeyboardGrab();
+    while (true) {
+      waitForKeyboardGrab();
 
-          if (sniffer.sniff(&note_map, &note_map_mutex) < 0) {
-            sniffer_failed = true;
-            return;
-          }
+      if (sniffer.sniff(&note_map, &note_map_mutex) < 0) {
+        sniffer_failed = true;
+        return;
+      }
 
-          messager.sendMessage("end-keyboard-grab");
-        }
-      });
+      messager.sendMessage("end-keyboard-grab");
+    }
+  });
 
   // sync with messenger's established connection
   {
     std::unique_lock lock{comm_established_mutex};
     comm_established.wait(lock);
   }
-  std::thread keyboard_synth_thread =
-      std::thread([this, &note_map, &note_map_mutex, &keyboard_synth_failed]() {
-        synth.start_keyboard(&note_map, &note_map_mutex);
-        // catch the end of the keyboard synth and let the user know
-        keyboard_synth_failed = true;
-      });
+  std::thread synth_thread = std::thread([this, &keyboard_synth_failed]() {
+    synth.start_keyboard(&note_map, &note_map_mutex);
+    // catch the end of the keyboard synth and let the user know
+    keyboard_synth_failed = true;
+  });
 
-  std::thread midi_input_thread = std::thread(
-      [&note_map, &midi_input, &note_map_mutex, &midi_setup_failed]() {
+  std::thread midi_input_thread =
+      std::thread([this, &midi_input, &midi_setup_failed]() {
         midi_input.midiSniffer(&note_map, &note_map_mutex);
         // catch the end of the midi sniffer and let the user know
         midi_setup_failed = true;
@@ -174,9 +187,9 @@ void GlobalController::startRunning() {
   }
 
   // not really necessary since the program runs indefinitely for now
-  sniffer_thread.join();
+  keyboard_sniffer_thread.join();
   midi_input_thread.join();
-  keyboard_synth_thread.join();
+  synth_thread.join();
   messager_thread.join();
 
   freeNoteMap(&note_map);
