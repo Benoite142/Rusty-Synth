@@ -19,9 +19,9 @@ private:
   HighPassFilter *high_pass_filter;
 
 public:
-  Operator(size_t numberOfVoices, float amplitude, EnvelopeADSR envelope,
-           Waveform waveform, LowFrequencyOscillator *lfo_1,
-           LowPassFilter *low_pass_filter, HighPassFilter *high_pass_filter);
+  Operator(size_t numberOfVoices, float amplitude, Waveform waveform,
+           LowFrequencyOscillator *lfo_1, LowPassFilter *low_pass_filter,
+           HighPassFilter *high_pass_filter);
   void set_operator_amplitude(float amplitude);
   size_t getNumberOfVoices();
   void set_number_of_voices(size_t numberOfVoices);

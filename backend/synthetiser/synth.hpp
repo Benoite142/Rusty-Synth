@@ -10,16 +10,14 @@
 #include <cstddef>
 #include <functional>
 #include <mutex>
+#include <variant>
 #include <vector>
 
 class Synth {
 private:
   SoundPlayer *async_player;
   size_t numberOfVoices = 2;
-  Operator synth_operator;
-  Operator synth_operator2;
-  Operator synth_operator3;
-  Operator synth_operator4;
+  Operator synth_operators[4];
   LowFrequencyOscillator lfo_1;
   HighPassFilter high_pass_filter;
   LowPassFilter low_pass_filter;
@@ -30,8 +28,9 @@ public:
   ~Synth();
   void start_keyboard(NoteMap *nm, std::mutex *map_mutex);
   void updateOperator(size_t operator_index, std::string operator_field,
-                      double value);
-  void updateLFO(size_t lfo_index, std::string lfo_field, double value);
+                      std::variant<double, std::string> value);
+  void updateLFO(size_t lfo_index, std::string lfo_field,
+                 std::variant<double, std::string> value);
   void startRecording();
   void stopRecording();
   void updateLowPassFilter(double value);

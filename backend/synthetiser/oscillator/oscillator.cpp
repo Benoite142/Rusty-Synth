@@ -110,6 +110,10 @@ void Oscillator::noteOff() {
   releaseStartAmplitude = amplitude;
 }
 
+void Oscillator::setPeakAmplitude(float peak_amplitude) {
+  peakAmplitude = peak_amplitude;
+}
+
 void Oscillator::getAmplitude() {
   switch (state) {
   case ATTACK:

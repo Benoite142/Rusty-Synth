@@ -17,8 +17,7 @@ float HighPassFilter::process(float sample) {
 }
 
 void HighPassFilter::setCutoff(float new_cutoff) {
-  cutoff = MINCUTOFF * std::pow(MAXCUTOFFHIGHPASS / MINCUTOFF, new_cutoff);
-
+  cutoff = std::pow(MAX_CUTOFF_HIGHPASS, new_cutoff);
   float resistor_capacitor = 1.0f / (2.0f * M_PI * cutoff);
   alpha = resistor_capacitor / (resistor_capacitor + 1.0f / SAMPLE_RATE);
   prevX = 0.0f;

@@ -2,9 +2,9 @@
 #include "../constants.h"
 #include <cmath>
 
-LowFrequencyOscillator::LowFrequencyOscillator(float freqAmount, Waveform wave,
-                                               float amplitudeAmount)
-    : frequency{freqAmount}, waveform(wave), amplitude(amplitudeAmount) {
+LowFrequencyOscillator::LowFrequencyOscillator(float freq, Waveform wave,
+                                               float amplitude)
+    : frequency{freq}, waveform(wave), amplitude(amplitude) {
   offset_sine_square = 2 * PI * (frequency / SAMPLE_RATE);
   offset_triangle_saw = frequency / SAMPLE_RATE;
 }

@@ -21,6 +21,8 @@ private:
   size_t selected_id;
   Messager messager;
   WavWriter wav_writer;
+  NoteMap note_map;
+  std::mutex note_map_mutex;
 
 public:
   GlobalController();

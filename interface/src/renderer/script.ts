@@ -184,7 +184,6 @@ const initOperator = (operator_number: number): Operator => {
         operator.wave_form.wave_value.setHTMLUnsafe(
             WAVE_FORMS[idx - 1 < 0 ? idx + WAVE_FORMS.length - 1 : idx - 1].text
         );
-        console.log(idx - 1 < 0 ? idx + WAVE_FORMS.length - 1 : idx);
         window.electronAPI.sendMessage(
             `op ${operator_number} waveform ${
                 WAVE_FORMS[idx - 1 < 0 ? idx + WAVE_FORMS.length - 1 : idx - 1]
@@ -383,7 +382,8 @@ const calculateDegree = (e: MouseEvent, knob: HTMLElement): number => {
 
 const attachSliderListener = (
     slider: HTMLInputElement,
-    onChange?: (normalized: number) => void
+    onChange?: (normalized: number) => void,
+    normalize = true
 ) => {
     if (!slider) return;
 
@@ -393,7 +393,7 @@ const attachSliderListener = (
     slider.addEventListener('mouseup', () => {
         const value = isNaN(Number(slider.value)) ? 75 : Number(slider.value);
         const normalized = (value - minValue) / (maxValue - minValue); // Normalize to [0, 1]
-        onChange?.(normalized);
+        onChange?.(normalize ? normalized : Number(slider.value));
     });
 };
 
@@ -415,22 +415,9 @@ window.onload = () => {
     const keyboardGrabButton = document.getElementById('keyboard-activator');
     const high_pass_knob = document.getElementById('high-pass-knob');
     const low_pass_knob = document.getElementById('low-pass-knob');
-    const syncButton = document.getElementById(
-        'light-up-button-lfo1'
-    ) as HTMLButtonElement;
-    const main_volume: HTMLInputElement = document.getElementById(
-        'main-volume'
+    const number_voices = document.getElementById(
+        'voice-range'
     ) as HTMLInputElement;
-
-    let on_off = false;
-
-    if (syncButton) {
-        syncButton.addEventListener('click', () => {
-            syncButton.classList.toggle('active');
-            on_off = !on_off;
-            console.log(on_off);
-        });
-    }
 
     if (high_pass_knob)
         attachKnobListener(high_pass_knob, (value: number) => {
@@ -442,14 +429,19 @@ window.onload = () => {
             window.electronAPI.sendMessage(`lpf ${value}`);
         });
 
-    if (main_volume)
-        attachSliderListener(main_volume, (value: number) => {
-            window.electronAPI.sendMessage(`main-volume-${value}`);
-        });
-
     keyboardGrabButton?.addEventListener('click', () => {
         window.electronAPI.grabKeyboard();
     });
+
+    if (number_voices) {
+        attachSliderListener(
+            number_voices,
+            (v: number) => {
+                window.electronAPI.sendMessage(`number-voices-${v}`);
+            },
+            false
+        );
+    }
 };
 
 window.electronAPI.endKeyboardGrab(() => {
