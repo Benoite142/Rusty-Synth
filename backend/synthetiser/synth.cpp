@@ -85,8 +85,9 @@ void Synth::updateOperator(size_t operator_index, std::string operator_field,
     synth_operators[operator_index].updateRelease(5 * std::get<double>(value));
     return;
   }
-  if (operator_field.compare("link-lfo") == 0) {
-    synth_operators[operator_index].setLFO1Enabled(std::get<double>(value));
+  if (operator_field.compare("lfo1") == 0) {
+    synth_operators[operator_index].setLFO1Enabled(
+        std::get<std::string>(value).compare("false"));
     return;
   }
 }

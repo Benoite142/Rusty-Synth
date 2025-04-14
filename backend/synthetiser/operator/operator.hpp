@@ -14,7 +14,7 @@ private:
   EnvelopeADSR envelope;
   Waveform waveform;
   LowFrequencyOscillator *lfo_1;
-  float lfo1Multiplier = 1.0f;
+  float lfo1Multiplier = 0.0f;
   LowPassFilter *low_pass_filter;
   HighPassFilter *high_pass_filter;
 
