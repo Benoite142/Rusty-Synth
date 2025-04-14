@@ -1,6 +1,5 @@
 #include "global_controller.hpp"
 #include "../messager/messager.hpp"
-#include "../midi/midi_setup.hpp"
 #include <functional>
 #include <iostream>
 #include <string>
@@ -36,8 +35,13 @@ size_t GlobalController::selectDevice(std::vector<std::string> *device_names) {
     std::unique_lock lock{wait_response_mutex};
     wait_response.wait(lock);
   }
-
   return selected_id;
+}
+
+void GlobalController::executeMessageAsync(std::string message) {
+  if (message.compare("select-midi-device") == 0) {
+    connectMidi();
+  }
 }
 
 void GlobalController::handleMessageReception(std::string message) {
@@ -82,6 +86,10 @@ void GlobalController::handleMessageReception(std::string message) {
     note_map_mutex.lock();
     updateNoteMapSize(&note_map, voices);
     note_map_mutex.unlock();
+  } else if (message.compare("select-midi-device") == 0) {
+    pending_messages.push(message);
+    std::unique_lock lock{pending_messages_mutex};
+    pending_messages_signal.notify_one();
   }
 
   else {
@@ -101,31 +109,27 @@ GlobalController::GlobalController()
                       std::placeholders::_1)},
       sniffer{}, messager{std::bind(&GlobalController::handleMessageReception,
                                     this, std::placeholders::_1)},
-      wav_writer{} {}
+      wav_writer{} {
+  midi_controller = MidiSetup();
+}
 
 void GlobalController::startRunning() {
   std::atomic_bool sniffer_failed = false, midi_synth_failed = false,
                    keyboard_synth_failed = false, midi_setup_failed = false;
 
+  std::thread async_messaging{[this]() {
+    while (true) {
+      {
+        std::unique_lock lock{pending_messages_mutex};
+        pending_messages_signal.wait(lock);
+      }
+
+      executeMessageAsync(pending_messages.front());
+      pending_messages.pop();
+    }
+  }};
+
   note_map = makeEmptyNoteMap();
-
-  MidiSetup midi_input;
-
-  // TODO change so the constructor does not throw
-  // like segmenting what can be done in constructor (no errors)
-  // and what will be done in init (returning -1 in case of failure)
-  try {
-    midi_input = MidiSetup();
-  } catch (const char *err) {
-    std::cout << "Could not create the MIDI setup class\n";
-    std::cout << err << std::endl;
-    return;
-  }
-
-  if (!midi_input.midiSetup()) {
-    std::cerr << "Could not initialize MIDI.\n";
-    return;
-  }
 
   std::thread messager_thread{[this]() {
     messager.startContext(&comm_established_mutex, &comm_established);
@@ -160,12 +164,15 @@ void GlobalController::startRunning() {
     keyboard_synth_failed = true;
   });
 
-  std::thread midi_input_thread =
-      std::thread([this, &midi_input, &midi_setup_failed]() {
-        midi_input.midiSniffer(&note_map, &note_map_mutex);
-        // catch the end of the midi sniffer and let the user know
-        midi_setup_failed = true;
-      });
+  std::thread midi_input_thread = std::thread([this, &midi_setup_failed]() {
+    {
+      std::unique_lock lock(midi_input_mutex);
+      grab_midi_input.wait(lock);
+    }
+    midi_controller.midiSniffer(&note_map, &note_map_mutex);
+    // catch the end of the midi sniffer and let the user know
+    midi_setup_failed = true;
+  });
 
   while (true) {
     if (midi_setup_failed) {
@@ -203,4 +210,14 @@ void GlobalController::startKeyboardGrab() {
 void GlobalController::waitForKeyboardGrab() {
   std::unique_lock lock(start_grabbing_mutex);
   start_grabbing.wait(lock);
+}
+
+void GlobalController::connectMidi() {
+  midi_controller.midiSetup(
+      std::bind(&GlobalController::selectDevice, this, std::placeholders::_1));
+
+  {
+    std::unique_lock lock(midi_input_mutex);
+    grab_midi_input.notify_one();
+  }
 }

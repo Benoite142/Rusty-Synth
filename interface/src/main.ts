@@ -40,11 +40,11 @@ app.whenReady().then(() => {
       submenu: [
         {
           label: 'MIDI Device',
-          click: () => connectionHandler.sendMessage('select-midi'),
+          click: () => connectionHandler.sendMessage('select-midi-device'),
         },
         {
           label: 'Output Device',
-          click: () => connectionHandler.sendMessage('select-output'),
+          click: () => connectionHandler.sendMessage('select-output-device'),
         },
       ],
     },

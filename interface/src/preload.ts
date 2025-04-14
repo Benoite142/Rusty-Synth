@@ -10,5 +10,6 @@ contextBridge.exposeInMainWorld('electronAPI', {
 	endKeyboardGrab: (callback: () => void) => ipcRenderer.on('end-keyboard-grab', () => callback()),
 	selectDeviceName: (callback: (args: string[]) => void) => ipcRenderer.on('select-device', (_event, args: string[]) => callback(args)),
 	sendMessage: (message: string) => ipcRenderer.invoke('send-message', message),
-	grabKeyboard: () => ipcRenderer.invoke('grab-keyboard')
+	grabKeyboard: () => ipcRenderer.invoke('grab-keyboard'),
+	selectMidiDevice: () => ipcRenderer.invoke('select-midi-device')
 });

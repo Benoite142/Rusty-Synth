@@ -171,9 +171,7 @@ const initOperator = (operator_number: number): Operator => {
             WAVE_FORMS[(idx + 1) % WAVE_FORMS.length].text
         );
         window.electronAPI.sendMessage(
-            `op ${operator_number} waveform ${
-                WAVE_FORMS[(idx + 1) % WAVE_FORMS.length].value
-            }`
+            `op ${operator_number} waveform ${WAVE_FORMS[(idx + 1) % WAVE_FORMS.length].value}`
         );
     });
 
@@ -185,10 +183,7 @@ const initOperator = (operator_number: number): Operator => {
             WAVE_FORMS[idx - 1 < 0 ? idx + WAVE_FORMS.length - 1 : idx - 1].text
         );
         window.electronAPI.sendMessage(
-            `op ${operator_number} waveform ${
-                WAVE_FORMS[idx - 1 < 0 ? idx + WAVE_FORMS.length - 1 : idx - 1]
-                    .value
-            }`
+            `op ${operator_number} waveform ${WAVE_FORMS[idx - 1 < 0 ? idx + WAVE_FORMS.length - 1 : idx - 1].value}`
         );
     });
 
@@ -227,18 +222,14 @@ const initOperator = (operator_number: number): Operator => {
     operator.lfo_link.lfo1.addEventListener('click', () => {
         operator.lfo_link.lfo1.classList.toggle('active');
         window.electronAPI.sendMessage(
-            `op ${operator_number} lfo1 toggle ${operator.lfo_link.lfo1.classList.contains(
-                'active'
-            )}`
+            `op ${operator_number} lfo1 toggle ${operator.lfo_link.lfo1.classList.contains('active')}`
         );
     });
 
     operator.lfo_link.lfo2.addEventListener('click', () => {
         operator.lfo_link.lfo2.classList.toggle('active');
         window.electronAPI.sendMessage(
-            `op ${operator_number} lfo2 toggle ${operator.lfo_link.lfo2.classList.contains(
-                'active'
-            )}`
+            `op ${operator_number} lfo2 toggle ${operator.lfo_link.lfo2.classList.contains('active')}`
         );
     });
 
@@ -274,8 +265,7 @@ const initLFO = (lfo_number: number): LFO => {
             WAVE_FORMS[(idx + 1) % WAVE_FORMS.length].text
         );
         window.electronAPI.sendMessage(
-            `lfo ${lfo_number} waveform ${
-                WAVE_FORMS[(idx + 1) % WAVE_FORMS.length].value
+            `lfo ${lfo_number} waveform ${WAVE_FORMS[(idx + 1) % WAVE_FORMS.length].value
             }`
         );
     });
@@ -288,10 +278,7 @@ const initLFO = (lfo_number: number): LFO => {
             WAVE_FORMS[idx - 1 < 0 ? idx + WAVE_FORMS.length - 1 : idx - 1].text
         );
         window.electronAPI.sendMessage(
-            `lfo ${lfo_number} waveform ${
-                WAVE_FORMS[idx - 1 < 0 ? idx + WAVE_FORMS.length - 1 : idx - 1]
-                    .value
-            }`
+            `lfo ${lfo_number} waveform ${WAVE_FORMS[idx - 1 < 0 ? idx + WAVE_FORMS.length - 1 : idx - 1].value}`
         );
     });
 
@@ -398,7 +385,6 @@ const attachSliderListener = (
 };
 
 window.onload = () => {
-    document.getElementById('body-container');
     globalVariables.menu_dialog = new MenuSelectionDialog(
         document.getElementById('menu-dialog') as HTMLDialogElement
     );

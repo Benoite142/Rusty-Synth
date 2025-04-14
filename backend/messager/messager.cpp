@@ -79,6 +79,9 @@ void Messager::startSendingMessages(tcp::socket *connection_socket) {
     boost::system::error_code error;
     boost::asio::write(*connection_socket,
                        boost::asio::buffer(message, message.size()), error);
+    if (error) {
+      std::cout << "have error on write " << error << std::endl;
+    }
   }
 }
 

@@ -73,7 +73,8 @@ int KeyboardSniffer::sniff(NoteMap *note_map, std::mutex *note_map_lock) {
     if (event.type == KeyPress) {
       if (*mapKeyCodeToString(event.xkey) == 'E') {
         XUnlockDisplay(display);
-        break;
+        std::cout << "exiting keyboard mode\n";
+        return 0;
       }
       // key press triggers multiple times
       // bypassing repeats by checking if it not currently active
