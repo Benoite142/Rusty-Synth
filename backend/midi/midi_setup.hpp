@@ -3,7 +3,9 @@
 
 #include "../utils/note_map.hpp"
 #include <alsa/asoundlib.h>
+#include <functional>
 #include <mutex>
+#include <string>
 
 class MidiSetup {
 private:
@@ -12,7 +14,8 @@ private:
 
 public:
   MidiSetup();
-  snd_seq_t *midiSetup();
+  void midiSetup(
+      std::function<int(std::vector<std::string> *)> device_selection_callback);
   void midiSniffer(NoteMap *note_map, std::mutex *note_map_lock);
 };
 #endif

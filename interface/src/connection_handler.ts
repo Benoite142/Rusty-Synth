@@ -10,7 +10,7 @@ export class ConnectionHandler {
 	public constructor(window: BrowserWindow, onErr: () => void) {
 		const socket = createConnection({ port: 8000, host: 'localhost' }, () => { });
 
-		const deviceNames: string[] = [];
+		let deviceNames: string[] = [];
 
 		socket.on('data', async (data: Buffer) => {
 			// when splitting in the start of a string
@@ -35,6 +35,7 @@ export class ConnectionHandler {
 					this.isCollectingDeviceNames = false;
 					console.log('end of device selection');
 					window.webContents.send('select-device', deviceNames);
+					deviceNames = [];
 					break;
 				}
 

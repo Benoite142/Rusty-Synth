@@ -1,17 +1,19 @@
 #include "midi_setup.hpp"
 #include <algorithm>
+#include <functional>
 #include <iostream>
 #include <mutex>
+#include <vector>
 
 MidiSetup::MidiSetup() {}
 
-snd_seq_t *MidiSetup::midiSetup() {
+void MidiSetup::midiSetup(
+    std::function<int(std::vector<std::string> *)> device_selection_callback) {
 
   if (snd_seq_open(&seq_handle, "default", SND_SEQ_OPEN_DUPLEX, 0) < 0) {
     std::cerr << "Error opening the ALSA sequencer. \n";
   }
-
-  snd_seq_set_client_name(seq_handle, "Synthesiser-Duo_Application");
+  snd_seq_set_client_name(seq_handle, "Synthesiser-Duo-Application");
 
   if (snd_seq_create_simple_port(seq_handle, "Input",
                                  SND_SEQ_PORT_CAP_WRITE |
@@ -19,9 +21,66 @@ snd_seq_t *MidiSetup::midiSetup() {
                                  SND_SEQ_PORT_TYPE_APPLICATION) < 0) {
     std::cerr << "Error creating a MIDI input port for the application. \n";
   }
-  std::cout << "MIDI input setup completed. \n";
 
-  return seq_handle;
+  // list available MIDI devices
+  std::vector<std::pair<int, int>> devices;
+  std::vector<std::string> device_names;
+
+  snd_seq_client_info_t *cinfo;
+  snd_seq_client_info_alloca(&cinfo);
+
+  int device_number = 0;
+  int client = -1;
+
+  while (snd_seq_query_next_client(seq_handle, cinfo) >= 0) {
+    client = snd_seq_client_info_get_client(cinfo);
+    std::string client_name = snd_seq_client_info_get_name(cinfo);
+
+    snd_seq_port_info_t *port_info;
+    snd_seq_port_info_alloca(&port_info);
+
+    snd_seq_port_info_set_client(port_info, client);
+
+    // on doit le mettre a -1 sinon on skip les ports 0 :/
+    snd_seq_port_info_set_port(port_info, -1);
+
+    while (snd_seq_query_next_port(seq_handle, port_info) >= 0) {
+      int port = snd_seq_port_info_get_port(port_info);
+      std::string port_name = snd_seq_port_info_get_name(port_info);
+
+      // skip ports and clients that we do want the application to connect to
+      // (ex:synth application)
+      unsigned int caps = snd_seq_port_info_get_capability(port_info);
+      if (!(caps & SND_SEQ_PORT_CAP_READ)) {
+        continue;
+      }
+
+      devices.emplace_back(client, port);
+      device_names.push_back(client_name + " - " + port_name);
+
+      std::cout << "Device " << device_number++ << ": " << client << ":" << port
+                << " - " << client_name << " (" << port_name << ")\n";
+    }
+  }
+
+  int selected_index = device_selection_callback(&device_names);
+
+  std::cout << "received select device " << selected_index << std::endl;
+
+  if (selected_index >= 0 && selected_index < devices.size()) {
+    int selected_client = devices[selected_index].first;
+    int selected_port = devices[selected_index].second;
+    std::cout << "Selected device: " << selected_client << ":" << selected_port
+              << " - " << device_names[selected_index] << "\n";
+    if (snd_seq_connect_from(seq_handle, 0, selected_client, selected_port) <
+        0) {
+      std::cerr << "Error connecting to MIDI device.\n";
+    }
+  } else {
+    std::cerr << "Invalid selection.\n";
+  }
+
+  std::cout << "MIDI input setup completed. \n";
 }
 
 void MidiSetup::midiSniffer(NoteMap *note_map, std::mutex *note_map_lock) {
@@ -45,7 +104,8 @@ void MidiSetup::midiSniffer(NoteMap *note_map, std::mutex *note_map_lock) {
                             Note{.note_value = -1});
 
         if (it == note_map->notes.end() || !it->released) {
-          note_map->notes[idx++ % 2] = {.note_value = note, .released = false};
+          note_map->notes[idx++ % note_map->notes.size()] = {.note_value = note,
+                                                             .released = false};
           note_map->current_voices++;
           *note_map->has_updated_value = true;
         }
