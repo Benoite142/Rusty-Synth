@@ -58,6 +58,9 @@ void GlobalController::handleMessageReception(std::string message) {
     if (message_parts[2].compare("waveform") == 0) {
       synth.updateOperator(std::stoi(message_parts[1]) - 1, message_parts[2],
                            message_parts[3]);
+    } else if (message_parts.size() == 5) {
+      synth.updateOperator(std::stoi(message_parts[1]) - 1, message_parts[2],
+                           message_parts[4]);
     } else {
       synth.updateOperator(std::stoi(message_parts[1]) - 1, message_parts[2],
                            std::stod(message_parts[3]));
