@@ -1,5 +1,12 @@
 # Synthetiser
 
+## Project Info
+
+This project was made during the 2025 winter semester as part of a university end-of-study project. 
+Being super interested about electronic music, I always wanted to explore audio programming and felt like this was the perfect opportunity to start a project I was passionate about.
+
+Mind you that this is also not perfect and that a lot of improvement should be done to make the app more functionnal and better. 
+
 ## Project Setup
 
 ### CPP Dependencies
