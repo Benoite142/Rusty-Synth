@@ -1,7 +1,11 @@
 # Synthetiser
 
 A real-time frequency modulation (FM) synthesizer with a graphical interface, built with C++ and Electron.
+This project was made during the 2025 winter semester as part of an end-of-semester-project for our university
 
+## Authors
+- Benoite142
+- m-paq
 
 ## Features
 
