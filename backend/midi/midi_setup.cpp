@@ -99,18 +99,38 @@ void MidiSetup::midiSniffer(NoteMap *note_map, std::mutex *note_map_lock) {
         short note = event->data.note.note;
         int velocity = event->data.note.velocity;
 
-        note_map_lock->lock();
-        auto it = std::find(note_map->notes.begin(), note_map->notes.end(),
-                            Note{.note_value = -1});
+        if (velocity == 0) {
+          note_map_lock->lock();
+          for (auto &n : note_map->notes) {
+            if (n.note_value == note && !n.released) {
+              n.released = true;
+              note_map->current_voices--;
+              *note_map->has_updated_value = true;
+              break;
+            }
+          }
+          note_map_lock->unlock();
 
-        if (it == note_map->notes.end() || !it->released) {
-          note_map->notes[idx++ % note_map->notes.size()] = {.note_value = note,
-                                                             .released = false};
-          note_map->current_voices++;
-          *note_map->has_updated_value = true;
+        } else {
+          note_map_lock->lock();
+          bool already_playing = false;
+          for (const auto &n : note_map->notes) {
+            if (n.note_value == note && !n.released) {
+              already_playing = true;
+              break;
+            }
+          }
+
+          if (!already_playing) {
+
+            note_map->notes[idx++ % note_map->notes.size()] = {
+                .note_value = note, .released = false};
+            note_map->current_voices++;
+            *note_map->has_updated_value = true;
+          }
+
+          note_map_lock->unlock();
         }
-
-        note_map_lock->unlock();
 
       } else if (event->type == SND_SEQ_EVENT_NOTEOFF) {
         short note = event->data.note.note;
