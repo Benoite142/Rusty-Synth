@@ -5,6 +5,10 @@ This project was made during the 2025 winter semester as part of an end-of-study
 
 Being super interested about electronic music, I always wanted to explore audio programming and felt like this was the perfect opportunity to start a project I was passionate about.
 
+
+<img width="1854" height="995" alt="image" src="https://github.com/user-attachments/assets/2fb60f3a-0c5f-4252-8933-8849517bca94" />
+
+
 ## Authors
 - Benoite142
 - m-paq
@@ -109,3 +113,5 @@ For some unknown reasons, the connection between the frontend and the backend so
 ### MIDI Not Detected
 - Ensure your MIDI device is connected before launching the application
 - Check that your MIDI device has proper permissions: \`ls -l /dev/snd/\`
+
+
